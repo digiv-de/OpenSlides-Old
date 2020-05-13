@@ -63,6 +63,16 @@
             <a
                 [@navItemAnim]
                 mat-list-item
+                routerLink="/agenda/speakers"
+                routerLinkActive="active"
+                (click)="mobileAutoCloseNav()"
+            >
+                <mat-icon>people</mat-icon>
+                <span>{{ 'List of speakers' | translate }}</span>
+            </a>
+            <a
+                [@navItemAnim]
+                mat-list-item
                 href="https://openslides.com"
                 target="_blank"
                 (click)="mobileAutoCloseNav()"
