@@ -4,3 +4,38 @@
         height: auto;
     }
 }
+
+.st-karten {
+    text-align: center;
+    margin: auto;
+    width: 50%;  
+}
+.st-karten a {
+    color: inherit;
+}
+.st-karte {
+    font-size: 20px;
+    border-radius: 10px;
+    transition: margin .3s;
+    float: left;
+    height: 150px;
+    width: 25%;
+    margin-right: 5px;
+    line-height: 150px;
+}
+.st-karte:hover {
+    margin-top: -4%;
+}
+.st-gruen {
+   background: green; 
+   transform-origin: 100% 1%;
+   transform: rotate(-10deg);
+}
+.st-gelb {
+    background: yellow;
+}
+.st-rot {
+    background: red;
+    transform-origin: 0% 1%;
+    transform: rotate(10deg);
+}

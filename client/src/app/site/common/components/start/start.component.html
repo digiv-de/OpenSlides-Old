@@ -36,3 +36,33 @@
         </form>
     </ng-container>
 </mat-card>
+<!-- lm: Stimmungskarten & GO-Antrag -->
+<mat-card [ngClass]="'os-card'" style="overflow: auto;">
+    <ng-container>
+        <div class="app-content">
+            <div class="title-slot">
+                <h2 style="margin-bottom: 5px;">Interaktion</h2>
+            </div>
+            
+            <h3>GO-Antrag</h3>
+            
+            <button (click)="goAntrag()" style="cursor: pointer;">
+                <mat-icon style="vertical-align: middle;">accessibility_new</mat-icon>
+                GO Antrag stellen</button>
+            
+            <h3>Stimmungskarten</h3>
+            <div>..... erklärung .....</div>
+            <div class="st-karten">
+                <a href="#" (click)="hebeKarte(1)">
+                    <div class="st-karte st-gruen">OK</div>
+                </a>
+                <a href="#" (click)="hebeKarte(2)">
+                    <div class="st-karte st-gelb">???</div>
+                </a>
+                <a href="#" (click)="hebeKarte(3)">
+                    <div class="st-karte st-rot">Nee</div>   
+                </a>
+            </div>
+        </div>
+    </ng-container>
+</mat-card>
