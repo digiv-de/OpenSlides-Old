@@ -96,8 +96,9 @@ export class AppComponent {
         // get the browsers default language
         const browserLang = translate.getBrowserLang();
         // try to use the browser language if it is available. If not, uses english.
-        translate.use(translate.getLangs().includes(browserLang) ? browserLang : 'en');
-
+        //translate.use(translate.getLangs().includes(browserLang) ? browserLang : 'en');
+        translate.use('de');
+        
         // change default JS functions
         this.overloadArrayFunctions();
         this.overloadSetFunctions();
