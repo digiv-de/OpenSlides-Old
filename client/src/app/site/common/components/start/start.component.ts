@@ -9,6 +9,9 @@ import { OperatorService } from 'app/core/core-services/operator.service';
 import { ConfigRepositoryService } from 'app/core/repositories/config/config-repository.service';
 import { ConfigService } from 'app/core/ui-services/config.service';
 import { BaseViewComponent } from 'app/site/base/base-view';
+import { HttpService } from 'app/core/core-services/http.service';
+import { ProjectorMessageRepositoryService } from 'app/core/repositories/projector/projector-message-repository.service';
+import { ProjectorMessage } from 'app/shared/models/core/projector-message';
 
 /**
  * Interface describes the keys for the fields at start-component.
@@ -59,7 +62,9 @@ export class StartComponent extends BaseViewComponent implements OnInit {
         private configService: ConfigService,
         private configRepo: ConfigRepositoryService,
         private fb: FormBuilder,
-        private operator: OperatorService
+        private operator: OperatorService,
+        private http: HttpService,
+        private projectorMessageRepositoryService: ProjectorMessageRepositoryService,
     ) {
         super(titleService, translate, matSnackbar);
         this.startForm = this.fb.group({
@@ -116,5 +121,46 @@ export class StartComponent extends BaseViewComponent implements OnInit {
      */
     public canManage(): boolean {
         return this.operator.hasPerms('core.can_manage_config');
+    }
+
+    /**
+     * Stellen eines GO-Antrags: Anzeige auf Projektor 1.
+     * Wird als "Projektor Message" gespeichert und angezeigt
+     */
+    public async goAntrag() {
+        // Neue Message erstellen
+        const theId:any = await this.projectorMessageRepositoryService.create(new ProjectorMessage({
+            message: `<p style="font-size: 45px;">GO-Antrag</p>\n<p style="font-size: 35px;">von ${this.operator.user.first_name} ${this.operator.user.last_name} gestellt`
+        }));
+        // console.log('erzeugt wurde: '+theId.id);
+        
+        // 1. Projektor holen
+        //var proj: Projector = new Projector({id: 1});
+        //console.log('---- proj ----');
+        //console.log(proj);
+        
+        // Anzeigen
+        //this.projectorService.projectOn(proj,this.projectorMessageRepositoryService.getViewModel(theId.id))
+        const requestData: any = {};
+        requestData.elements = [{"stable": false, "name": "core/projector-message", "id":theId.id}];
+        console.log(requestData);
+        await this.http.post('/rest/core/projector/1/project/', requestData);
+    }
+
+    /**
+     * Handeln der Stimmungskarten.
+     * @param typ 1: Grün, 2: Gelb, 3: Rot
+     */
+    public async hebeKarte(typ: number) {
+        const requestData: any = {};
+
+        requestData.typ = typ;
+        requestData.time = Date.now()
+        
+        /**
+         * TODO wie wo was...
+         */
+
+        //await this.http.post('')
     }
 }

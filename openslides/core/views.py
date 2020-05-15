@@ -133,11 +133,13 @@ class ProjectorViewSet(ModelViewSet):
             "control_view",
             "set_scroll",
             "set_reference_projector",
-            "project",
         ):
             result = has_perm(self.request.user, "core.can_see_projector") and has_perm(
                 self.request.user, "core.can_manage_projector"
             )
+        # LM dpsg ergaenzt um GO-Message anzeige zu aktivieren
+        elif self.action in ("project"):
+            result = has_perm(self.request.user, "core.can_see_projector")
         else:
             result = False
         return result
@@ -525,7 +527,6 @@ class ProjectorMessageViewSet(ModelViewSet):
     There are the following views: list, retrieve, create, update,
     partial_update and destroy.
     """
-
     access_permissions = ProjectorMessageAccessPermissions()
     queryset = ProjectorMessage.objects.all()
 
@@ -535,7 +536,10 @@ class ProjectorMessageViewSet(ModelViewSet):
         """
         if self.action in ("list", "retrieve"):
             result = self.get_access_permissions().check_permissions(self.request.user)
-        elif self.action in ("create", "partial_update", "update", "destroy"):
+        # LM dpsg ergaenzt um GO-Antrag ProjecotrMessage zu erstellen
+        elif self.action in ("create"):
+            result = has_perm(self.request.user, "core.can_see_projector")
+        elif self.action in ("partial_update", "update", "destroy"):
             result = has_perm(self.request.user, "core.can_manage_projector")
         else:
             result = False
