@@ -176,9 +176,10 @@ export class StartComponent extends BaseViewComponent implements OnInit {
             this.isLocked = false;
         }, 45000);
 
-        // https://srv02.loebling-it.de:8080/api/raise
-        // https://stimmung-test.bv.dpsg.de/raise
-        this.httpCli.post('https://srv02.loebling-it.de:8080/api/raise',requestData,
+        //const url ='https://srv02.loebling-it.de:8080/api/raise';
+        const url = 'https://stimmung-test.bv.dpsg.de/raise';
+
+        this.httpCli.post(url,requestData,
             {headers: new HttpHeaders({
                 'Authorization': 'Bearer 348eogdihvklnq2w0p93pqtoejgvfcub'
             })}).subscribe();
