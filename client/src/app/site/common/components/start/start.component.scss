@@ -7,24 +7,24 @@
 
 .st-karten {
     text-align: center;
-    margin: auto;
-    width: 50%;  
+    width: 100%;
 }
 .st-karten a {
     color: inherit;
 }
 .st-karte {
+    cursor: pointer;
     font-size: 20px;
     border-radius: 10px;
     transition: margin .3s;
     float: left;
     height: 150px;
-    width: 25%;
+    width: 80px;
     margin-right: 5px;
     line-height: 150px;
 }
 .st-karte:hover {
-    margin-top: -4%;
+    margin-top: -20px;
 }
 .st-gruen {
    background: green; 
@@ -38,4 +38,16 @@
     background: red;
     transform-origin: 0% 1%;
     transform: rotate(10deg);
+}
+
+.alert {
+    color: #212a5e;
+    background-color: #d9dcf0;
+    position: relative;
+    padding: .5rem 1rem;
+}
+.goBtn {
+    background-origin: 1px solid grey;
+    cursor: pointer;
+    line-height: 2;
 }

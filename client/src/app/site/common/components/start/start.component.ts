@@ -12,6 +12,7 @@ import { BaseViewComponent } from 'app/site/base/base-view';
 import { HttpService } from 'app/core/core-services/http.service';
 import { ProjectorMessageRepositoryService } from 'app/core/repositories/projector/projector-message-repository.service';
 import { ProjectorMessage } from 'app/shared/models/core/projector-message';
+import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 
 /**
  * Interface describes the keys for the fields at start-component.
@@ -34,6 +35,9 @@ export class StartComponent extends BaseViewComponent implements OnInit {
      * Whether the user is editing the content.
      */
     public isEditing = false;
+
+    public isLocked = false;
+    public isAntragSend = false;
 
     /**
      * Formular for the content.
@@ -64,6 +68,7 @@ export class StartComponent extends BaseViewComponent implements OnInit {
         private fb: FormBuilder,
         private operator: OperatorService,
         private http: HttpService,
+        private httpCli: HttpClient,
         private projectorMessageRepositoryService: ProjectorMessageRepositoryService,
     ) {
         super(titleService, translate, matSnackbar);
@@ -143,8 +148,13 @@ export class StartComponent extends BaseViewComponent implements OnInit {
         //this.projectorService.projectOn(proj,this.projectorMessageRepositoryService.getViewModel(theId.id))
         const requestData: any = {};
         requestData.elements = [{"stable": false, "name": "core/projector-message", "id":theId.id}];
-        console.log(requestData);
+        
         await this.http.post('/rest/core/projector/1/project/', requestData);
+
+        this.isAntragSend = true;
+        setTimeout(() => {
+            this.isAntragSend = false;
+        }, 3000);
     }
 
     /**
@@ -153,14 +163,24 @@ export class StartComponent extends BaseViewComponent implements OnInit {
      */
     public async hebeKarte(typ: number) {
         const requestData: any = {};
-
-        requestData.typ = typ;
-        requestData.time = Date.now()
         
-        /**
-         * TODO wie wo was...
-         */
+        requestData.typ = typ;
+        requestData.ts = Math.round(+new Date()/1000);
+        requestData.user = this.operator.user.first_name;
+        
+        //console.log(requestData);
+        //console.log('-------------');
 
-        //await this.http.post('')
+        this.isLocked = true;
+        setTimeout(() => {
+            this.isLocked = false;
+        }, 45000);
+
+        // https://srv02.loebling-it.de:8080/api/raise
+        // https://stimmung-test.bv.dpsg.de/raise
+        this.httpCli.post('https://srv02.loebling-it.de:8080/api/raise',requestData,
+            {headers: new HttpHeaders({
+                'Authorization': 'Bearer 348eogdihvklnq2w0p93pqtoejgvfcub'
+            })}).subscribe();
     }
 }
