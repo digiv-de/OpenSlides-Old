@@ -28,6 +28,26 @@
 </os-head-bar>
 
 <mat-card class="os-card speaker-card" *ngIf="viewListOfSpeakers">
+
+    <!-- Add me and remove me if OP has correct permission -->
+    <div *osPerms="'agenda.can_be_speaker'" class="add-self-buttons">
+        <div *ngIf="speakers && !closedList">
+            <button
+                mat-stroked-button
+                [disabled]="viewListOfSpeakers.closed"
+                (click)="addNewSpeaker()"
+                *ngIf="!isOpInList() && canAddSelf"
+            >
+                <mat-icon>add</mat-icon>
+                <span>{{ 'Add me' | translate }}</span>
+            </button>
+            <button mat-stroked-button (click)="onDeleteButton()" *ngIf="isOpInList()">
+                <mat-icon>remove</mat-icon>
+                <span>{{ 'Remove me' | translate }}</span>
+            </button>
+        </div>
+    </div>
+	
     <!-- Title -->
     <h1 class="los-title">
         {{ viewListOfSpeakers.getTitle() }}
@@ -164,25 +184,6 @@
                 </os-search-value-selector>
             </mat-form-field>
         </form>
-    </div>
-
-    <!-- Add me and remove me if OP has correct permission -->
-    <div *osPerms="'agenda.can_be_speaker'" class="add-self-buttons">
-        <div *ngIf="speakers && !closedList">
-            <button
-                mat-stroked-button
-                [disabled]="viewListOfSpeakers.closed"
-                (click)="addNewSpeaker()"
-                *ngIf="!isOpInList() && canAddSelf"
-            >
-                <mat-icon>add</mat-icon>
-                <span>{{ 'Add me' | translate }}</span>
-            </button>
-            <button mat-stroked-button (click)="onDeleteButton()" *ngIf="isOpInList()">
-                <mat-icon>remove</mat-icon>
-                <span>{{ 'Remove me' | translate }}</span>
-            </button>
-        </div>
     </div>
 </mat-card>
 
