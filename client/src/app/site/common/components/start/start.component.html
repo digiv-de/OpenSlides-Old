@@ -60,7 +60,7 @@
                     <div class="st-karte st-gruen">OK</div>
                 </a>-->
                 <div class="alert" *ngIf="isLocked">
-                    <span>Stimmungskarten können nur alle 45 Sekunden gehoben werden - bitte warte kurz</span>
+                    <span>Stimmungskarten können nur alle 60 Sekunden gehoben werden - bitte warte kurz</span>
                 </div>
 
                 <div *ngIf="!isLocked" (click)="hebeKarte(1)" class="st-karte st-gruen">OK</div>
