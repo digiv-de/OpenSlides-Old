@@ -38,7 +38,6 @@
         <button type="button" class="forgot-password-button" (click)="resetPassword()" mat-button>
             {{ 'Forgot Password?' | translate }}
         </button>
-	</div>
 	
         <!-- login button -->
         <br />
@@ -53,6 +52,8 @@
         >
             {{ 'Login as guest' | translate }}
         </button>
+	</div>
+	
         <a
             mat-stroked-button
             *ngIf="samlLoginButtonText"
@@ -64,6 +65,8 @@
         </a>
 		
 		<!-- show login button -->
+        <br />
+        <hr />
         <br />
         <button type="button" class="" onclick="document.getElementById('falselogin').style.display = 'block';" mat-button>
             {{ 'Falscher Login' | translate }}
