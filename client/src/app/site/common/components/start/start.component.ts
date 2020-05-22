@@ -174,7 +174,7 @@ export class StartComponent extends BaseViewComponent implements OnInit {
         this.isLocked = true;
         setTimeout(() => {
             this.isLocked = false;
-        }, 45000);
+        }, 30000);
 
         //const url ='https://srv02.loebling-it.de:8080/api/raise';
         const url = 'https://stimmung-test.bv.dpsg.de/raise';
