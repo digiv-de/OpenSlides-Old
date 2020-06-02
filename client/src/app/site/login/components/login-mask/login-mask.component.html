@@ -7,7 +7,6 @@
 
     <!-- login form -->
     <form [formGroup]="loginForm" class="login-container" (ngSubmit)="formLogin('default')">
-	<div id="falselogin" style="display: none;">
         <mat-form-field>
             <input
                 matInput
@@ -38,7 +37,6 @@
         <button type="button" class="forgot-password-button" (click)="resetPassword()" mat-button>
             {{ 'Forgot Password?' | translate }}
         </button>
-	
         <!-- login button -->
         <br />
         <!-- TODO: Next to each other...-->
@@ -52,8 +50,6 @@
         >
             {{ 'Login as guest' | translate }}
         </button>
-	</div>
-	
         <a
             mat-stroked-button
             *ngIf="samlLoginButtonText"
@@ -63,13 +59,5 @@
         >
             {{ samlLoginButtonText | translate }}
         </a>
-		
-		<!-- show login button -->
-        <br />
-        <hr />
-        <br />
-        <button type="button" class="" onclick="document.getElementById('falselogin').style.display = 'block';" mat-button>
-            {{ 'Falscher Login' | translate }}
-        </button>
     </form>
 </div>
