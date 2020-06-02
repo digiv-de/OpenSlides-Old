@@ -8,7 +8,7 @@ import { ActivatedRoute } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { timer } from 'rxjs';
 
-import { OperatorService } from 'app/core/core-services/operator.service';
+import { OperatorService, Permission } from 'app/core/core-services/operator.service';
 import { ProjectorService } from 'app/core/core-services/projector.service';
 import { CountdownRepositoryService } from 'app/core/repositories/projector/countdown-repository.service';
 import { ProjectorMessageRepositoryService } from 'app/core/repositories/projector/projector-message-repository.service';
@@ -29,7 +29,7 @@ import { ViewCountdown } from 'app/site/projector/models/view-countdown';
 import { ViewProjectorMessage } from 'app/site/projector/models/view-projector-message';
 import { SlideManager } from 'app/slides/services/slide-manager.service';
 import { CountdownData, CountdownDialogComponent } from '../countdown-dialog/countdown-dialog.component';
-import { CurrentListOfSpeakersSlideService } from '../../services/current-list-of-of-speakers-slide.service';
+import { CurrentListOfSpeakersSlideService } from '../../services/current-list-of-speakers-slide.service';
 import { CurrentSpeakerChyronSlideService } from '../../services/current-speaker-chyron-slide.service';
 import { MessageData, MessageDialogComponent } from '../message-dialog/message-dialog.component';
 import { ProjectorEditDialogComponent } from '../projector-edit-dialog/projector-edit-dialog.component';
@@ -162,7 +162,7 @@ export class ProjectorDetailComponent extends BaseViewComponent implements OnIni
      * @returns true if the operator can manage
      */
     public canManage(): boolean {
-        return this.opertator.hasPerms('core.can_manage_projector');
+        return this.opertator.hasPerms(Permission.coreCanManageProjector);
     }
 
     /**
@@ -232,7 +232,7 @@ export class ProjectorDetailComponent extends BaseViewComponent implements OnIni
     }
 
     public unprojectCurrent(element: ProjectorElement): void {
-        const idElement = this.slideManager.getIdentifialbeProjectorElement(element);
+        const idElement = this.slideManager.getIdentifiableProjectorElement(element);
         this.projectorService.removeFrom(this.projector.projector, idElement).catch(this.raiseError);
     }
 

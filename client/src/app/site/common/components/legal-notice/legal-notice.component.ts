@@ -4,8 +4,9 @@ import { Title } from '@angular/platform-browser';
 
 import { TranslateService } from '@ngx-translate/core';
 
+import { DataStoreService } from 'app/core/core-services/data-store.service';
 import { OpenSlidesService } from 'app/core/core-services/openslides.service';
-import { OperatorService } from 'app/core/core-services/operator.service';
+import { OperatorService, Permission } from 'app/core/core-services/operator.service';
 import { ConfigRepositoryService } from 'app/core/repositories/config/config-repository.service';
 import { UpdateService } from 'app/core/ui-services/update.service';
 import { BaseViewComponent } from 'app/site/base/base-view';
@@ -25,6 +26,8 @@ export class LegalNoticeComponent extends BaseViewComponent implements OnInit {
      */
     public legalNotice = '';
 
+    public showDevTools = false;
+
     /**
      * Constructor.
      */
@@ -35,7 +38,8 @@ export class LegalNoticeComponent extends BaseViewComponent implements OnInit {
         private openSlidesService: OpenSlidesService,
         private update: UpdateService,
         private configRepo: ConfigRepositoryService,
-        private operator: OperatorService
+        private operator: OperatorService,
+        private DS: DataStoreService
     ) {
         super(title, translate, matSnackbar);
     }
@@ -65,6 +69,14 @@ export class LegalNoticeComponent extends BaseViewComponent implements OnInit {
      * Returns, if the current user has the necessary permissions.
      */
     public canManage(): boolean {
-        return this.operator.hasPerms('core.can_manage_config');
+        return this.operator.hasPerms(Permission.coreCanManageConfig);
+    }
+
+    public printDS(): void {
+        this.DS.print();
+    }
+
+    public getThisComponent(): void {
+        console.log(this);
     }
 }

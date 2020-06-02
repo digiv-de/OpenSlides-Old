@@ -32,6 +32,7 @@ def test_agenda_item_db_queries():
     * 1 request to get all topics,
     * 1 request to get all motion blocks and
     * 1 request to get all parents
+    * 1 request to get all tags
     """
     parent = Topic.objects.create(title="parent").agenda_item
     for index in range(10):
@@ -45,7 +46,7 @@ def test_agenda_item_db_queries():
     MotionBlock.objects.create(title="block1")
     MotionBlock.objects.create(title="block1")
 
-    assert count_queries(Item.get_elements)() == 6
+    assert count_queries(Item.get_elements)() == 7
 
 
 @pytest.mark.django_db(transaction=False)
@@ -66,7 +67,7 @@ def test_list_of_speakers_db_queries():
     Motion.objects.create(title="motion2")
     Assignment.objects.create(title="assignment", open_posts=5)
     Mediafile.objects.create(
-        title=f"mediafile", mediafile=SimpleUploadedFile(f"some_file", b"some content.")
+        title="mediafile", mediafile=SimpleUploadedFile("some_file", b"some content.")
     )
 
     assert count_queries(ListOfSpeakers.get_elements)() == 6

@@ -66,6 +66,17 @@ To enable it, set::
     ENABLE_ELECTRONIC_VOTING = True
 
 
+Jitsi integration
+=================
+
+To enable the audio conference with Jitsi Meet, you have to set the following variables:
+
+- `JITSI_DOMAIN`: must contain an url to a Jitsi server
+- `JITSI_ROOM_NAME`: the name of the room that should be used
+- `JITSI_PASSWORD`: (optional) the password of the room. Will be
+applied automatically from the settings.
+
+
 Logging
 =======
 
@@ -132,3 +143,7 @@ not affect the client.
 operator is in one of these groups, the client disconnected and reconnects again.
 All requests urls (including websockets) are now prefixed with `/prioritize`, so
 these requests from "prioritized clients" can be routed to different servers.
+
+`AUTOUPDATE_DELAY`: The delay to send autoupdates. This feature can be
+deactivated by setting it to `None`. It is deactivated per default. The Delay is
+given in seconds
