@@ -19,6 +19,8 @@ import { OpenSlidesStatusService } from '../core/core-services/openslides-status
 import { OperatorService } from '../core/core-services/operator.service';
 import { TimeTravelService } from '../core/core-services/time-travel.service';
 import { ViewportService } from '../core/ui-services/viewport.service';
+import { infoDialogSettings, largeDialogSettings } from 'app/shared/utils/dialog-settings';
+import { StimmungOverlayComponent } from './stimmung-overlay/stimmung-overlay.component';
 
 /**
  * Interface to describe possible routing data
@@ -188,6 +190,14 @@ export class SiteComponent extends BaseComponent implements OnInit {
      */
     public toggleSideNav(): void {
         this.sideNav.toggle();
+    }
+
+    public stimmungModal(): void {
+        this.dialog.open(StimmungOverlayComponent,{
+            //data: stimmungData,
+            ...largeDialogSettings
+        });
+        this.mobileAutoCloseNav();
     }
 
     /**

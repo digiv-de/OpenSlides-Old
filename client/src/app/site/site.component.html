@@ -43,6 +43,26 @@
             <a
                 [@navItemAnim]
                 mat-list-item
+                routerLinkActive="active"
+                (click)="stimmungModal()"
+            >
+                <mat-icon>accessibility_new</mat-icon>
+                <span>Interaktion</span>
+            </a>
+            <a
+                [@navItemAnim]
+                mat-list-item
+                routerLink="/agenda/speakers"
+                routerLinkActive="active"
+                (click)="mobileAutoCloseNav()"
+            >
+                <mat-icon>recent_actors</mat-icon>
+                <span>{{ 'List of speakers' | translate }}</span>
+            </a>
+            <mat-divider></mat-divider>
+            <a
+                [@navItemAnim]
+                mat-list-item
                 routerLink="/legalnotice"
                 routerLinkActive="active"
                 (click)="mobileAutoCloseNav()"
@@ -59,16 +79,6 @@
             >
                 <mat-icon>security</mat-icon>
                 <span>{{ 'Privacy policy' | translate }}</span>
-            </a>
-            <a
-                [@navItemAnim]
-                mat-list-item
-                routerLink="/agenda/speakers"
-                routerLinkActive="active"
-                (click)="mobileAutoCloseNav()"
-            >
-                <mat-icon>recent_actors</mat-icon>
-                <span>{{ 'List of speakers' | translate }}</span>
             </a>
             <a
                 [@navItemAnim]

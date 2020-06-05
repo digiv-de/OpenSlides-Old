@@ -12,7 +12,8 @@ import { BaseViewComponent } from 'app/site/base/base-view';
 import { HttpService } from 'app/core/core-services/http.service';
 import { ProjectorMessageRepositoryService } from 'app/core/repositories/projector/projector-message-repository.service';
 import { ProjectorMessage } from 'app/shared/models/core/projector-message';
-import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { interval } from 'rxjs';
 
 /**
  * Interface describes the keys for the fields at start-component.
@@ -38,6 +39,12 @@ export class StartComponent extends BaseViewComponent implements OnInit {
 
     public isLocked = false;
     public isAntragSend = false;
+
+    public stimmungApiData: any = [{anz:0},{anz:0},{anz:0}];
+    private counter: any = null;
+    private subscription: any = null;
+    private apiUrl: string = 'https://stmg.digiv.de/datasource';
+        //'https://srv02.loebling-it.de:8080/api/datasource';
 
     /**
      * Formular for the content.
@@ -95,8 +102,31 @@ export class StartComponent extends BaseViewComponent implements OnInit {
         this.configService.get<string>('general_event_welcome_text').subscribe(welcomeText => {
             this.startContent.general_event_welcome_text = this.translate.instant(welcomeText);
         });
+
+        // Api Daten initial aufrufen
+        fetch(this.apiUrl)
+           .then(response => response.json())
+        .then(resp => {
+            this.stimmungApiData = resp;
+        });
+
+        // Api Aufrufen alle 4 sekunden
+        this.counter = interval(4000);
+        
+        this.subscription = this.counter.subscribe(x => {
+            fetch(this.apiUrl)
+                .then(response => response.json())
+                .then(resp => {
+                    this.stimmungApiData = resp;
+                });
+        });
     }
 
+    public ngOnDestroy(): void {
+        console.log('____________');
+        this.subscription.unsubscribe();
+        //window.clearInterval(this.counter);
+    }
     /**
      * Changes to editing mode.
      */
@@ -176,8 +206,8 @@ export class StartComponent extends BaseViewComponent implements OnInit {
             this.isLocked = false;
         }, 30000);
 
-        //const url ='https://srv02.loebling-it.de:8080/api/raise';
-        const url = 'https://stimmung-test.bv.dpsg.de/raise';
+        const url ='https://srv02.loebling-it.de:8080/api/raise';
+        //const url = 'https://stimmung-test.bv.dpsg.de/raise';
 
         this.httpCli.post(url,requestData,
             {headers: new HttpHeaders({

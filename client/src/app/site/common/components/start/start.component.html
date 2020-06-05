@@ -36,38 +36,19 @@
         </form>
     </ng-container>
 </mat-card>
-<!-- lm: Stimmungskarten & GO-Antrag -->
+<!-- anzeige der Stimmungskarten Werte-->
 <mat-card [ngClass]="'os-card'" style="overflow: auto;">
     <ng-container>
         <div class="app-content" style="margin-left: 10px; margin-right:10px;">
             <div class="title-slot">
-                <h2 style="margin-bottom: 5px;">Interaktion</h2>
+                <h2 style="margin-bottom: 5px;">Stimmung</h2>
             </div>
-            
-            <h3>GO-Antrag</h3>
-            <button (click)="goAntrag()" class="goBtn">
-                <mat-icon style="vertical-align: middle;">accessibility_new</mat-icon>
-                GO Antrag stellen</button>
-            <div class="alert" *ngIf="isAntragSend">
-                <span>Dein GO-Antrag wurde gesendet!</span>
-            </div>
+            <div class="proj-st-karten">
+                <div class="proj-st-karte st-gruen">{{ stimmungApiData[0].anz }}</div>
 
+                <div class="proj-st-karte st-gelb">{{ stimmungApiData[1].anz }}</div>
 
-            <h3>Stimmungskarten</h3>
-            <p></p>
-            <div class="st-karten">
-                <!--<a href="#" (click)="hebeKarte(1)">
-                    <div class="st-karte st-gruen">OK</div>
-                </a>-->
-                <div class="alert" *ngIf="isLocked">
-                    <span>Stimmungskarten können nur alle 30 Sekunden gehoben werden - bitte warte kurz</span>
-                </div>
-
-                <div *ngIf="!isLocked" (click)="hebeKarte(1)" class="st-karte st-gruen">OK</div>
-
-                <div *ngIf="!isLocked" (click)="hebeKarte(2)" class="st-karte st-gelb">???</div>
-
-                <div *ngIf="!isLocked" (click)="hebeKarte(3)" class="st-karte st-rot">Nee</div>   
+                <div class="proj-st-karte st-rot">{{ stimmungApiData[2].anz }}</div>   
             </div>
         </div>
     </ng-container>

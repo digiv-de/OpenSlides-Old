@@ -1,0 +1,33 @@
+<h1 mat-dialog-title style="margin-bottom: 0px; padding-bottom: 0px;">
+    <span>Interaktion</span>
+</h1>
+<div mat-dialog-content>
+    <h3>GO-Antrag</h3>
+    <button (click)="goAntrag()" class="goBtn">
+        <mat-icon style="vertical-align: middle;">accessibility_new</mat-icon>
+        GO Antrag stellen</button>
+    <div class="alert" *ngIf="isAntragSend">
+        <span>Dein GO-Antrag wurde gesendet!</span>
+    </div>
+
+    <h3>Stimmungskarte heben</h3>
+    <div class="st-karten">
+        <div class="alert" *ngIf="isLocked">
+            <span>Stimmungskarten können nur alle 30 Sekunden gehoben werden - bitte warte kurz</span>
+        </div>
+
+        <div *ngIf="!isLocked" (click)="hebeKarte(1)" class="st-karte st-gruen">OK</div>
+
+        <div *ngIf="!isLocked" (click)="hebeKarte(2)" class="st-karte st-gelb">???</div>
+
+        <div *ngIf="!isLocked" (click)="hebeKarte(3)" class="st-karte st-rot">Nee</div>   
+    </div>
+
+</div>
+
+<div mat-dialog-actions>
+    <!-- Cancel Countdown button -->
+    <button type="button" mat-button [mat-dialog-close]="null">
+        <span>Schließen</span>
+    </button>
+</div>
