@@ -2,7 +2,7 @@ import { Component, ElementRef, Input, OnDestroy, ViewChild } from '@angular/cor
 import { Title } from '@angular/platform-browser';
 
 import { TranslateService } from '@ngx-translate/core';
-import { Subject, Subscription } from 'rxjs';
+import { Subject, Subscription, interval } from 'rxjs';
 
 import { BaseComponent } from 'app/base.component';
 import { OfflineService } from 'app/core/core-services/offline.service';
@@ -27,6 +27,11 @@ export class ProjectorComponent extends BaseComponent implements OnDestroy {
      * The current projector id.
      */
     private projectorId: number | null = null;
+
+    public stimmungApiData: any = [{anz:0},{anz:0},{anz:0}];
+    private counter: any = null;
+    private subscription: any = null;
+    private apiUrl: string = 'https://stmg.digiv.de/datasource';
 
     @Input()
     public set projector(projector: ViewProjector) {
@@ -324,6 +329,25 @@ export class ProjectorComponent extends BaseComponent implements OnDestroy {
         }
     }
 
+    public ngOnInit(): void {
+        // Api Daten initial aufrufen
+        fetch(this.apiUrl)
+           .then(response => response.json())
+        .then(resp => {
+            this.stimmungApiData = resp;
+        });
+
+        // Api Aufrufen alle 4 sekunden
+        this.counter = interval(4000);
+        
+        this.subscription = this.counter.subscribe(x => {
+            fetch(this.apiUrl)
+                .then(response => response.json())
+                .then(resp => {
+                    this.stimmungApiData = resp;
+                });
+        });
+    }
     /**
      * Deregister the projector from the projectordataservice.
      */

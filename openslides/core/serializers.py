@@ -120,6 +120,7 @@ class ProjectorSerializer(ModelSerializer):
             "show_header_footer",
             "show_title",
             "show_logo",
+            "show_stimmung",
         )
         read_only_fields = ("scale", "scroll")
 

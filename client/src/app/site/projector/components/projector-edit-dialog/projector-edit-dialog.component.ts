@@ -126,7 +126,8 @@ export class ProjectorEditDialogComponent extends BaseViewComponent implements O
             chyron_font_color: ['', Validators.required],
             show_header_footer: [],
             show_title: [],
-            show_logo: []
+            show_logo: [],
+            show_stimmung: [],
         });
 
         // react to form changes

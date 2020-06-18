@@ -44,7 +44,6 @@ export class StartComponent extends BaseViewComponent implements OnInit {
     private counter: any = null;
     private subscription: any = null;
     private apiUrl: string = 'https://stmg.digiv.de/datasource';
-        //'https://srv02.loebling-it.de:8080/api/datasource';
 
     /**
      * Formular for the content.

@@ -97,6 +97,7 @@ class Projector(RESTModelMixin, models.Model):
     show_header_footer = models.BooleanField(default=True)
     show_title = models.BooleanField(default=True)
     show_logo = models.BooleanField(default=True)
+    show_stimmung = models.BooleanField(default=True)
 
     name = models.CharField(max_length=255, unique=True)
 

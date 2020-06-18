@@ -79,6 +79,7 @@ export class Projector extends BaseModel<Projector> {
     public show_header_footer: boolean;
     public show_title: boolean;
     public show_logo: boolean;
+    public show_stimmung: boolean;
 
     /**
      * @returns Calculate the height of the projector
