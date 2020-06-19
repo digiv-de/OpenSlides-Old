@@ -56,6 +56,14 @@ def get_config_variables():
     )
 
     yield ConfigVariable(
+        name="general_stimmung_token",
+        default_value="",
+        label="Stimmungs-API Token",
+        weight=125,
+        subgroup="Event",
+    )
+
+    yield ConfigVariable(
         name="general_event_legal_notice",
         default_value='<a href="http://www.openslides.org">OpenSlides</a> is a '
         "free web based presentation and assembly system for "

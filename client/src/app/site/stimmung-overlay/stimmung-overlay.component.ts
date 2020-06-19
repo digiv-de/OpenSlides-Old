@@ -8,6 +8,7 @@ import { ProjectorMessageRepositoryService } from 'app/core/repositories/project
 import { HttpService } from 'app/core/core-services/http.service';
 import { ProjectorMessage } from 'app/shared/models/core/projector-message';
 import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
+import { ConfigService } from 'app/core/ui-services/config.service';
 
 /**
  * Dialog component for countdowns
@@ -25,6 +26,8 @@ export class StimmungOverlayComponent extends BaseViewComponent implements OnIni
 
     public isLocked = false;
     public isAntragSend = false;
+    public apiUrl: string = '';
+    private apiToken: string = '';
 
     /**
      * Constructor
@@ -43,6 +46,7 @@ export class StimmungOverlayComponent extends BaseViewComponent implements OnIni
         private projectorMessageRepositoryService: ProjectorMessageRepositoryService,
         private http: HttpService,
         private httpCli: HttpClient,
+        private configService: ConfigService,
         matSnackBar: MatSnackBar,
         translate: TranslateService
     ) {
@@ -54,6 +58,14 @@ export class StimmungOverlayComponent extends BaseViewComponent implements OnIni
      * Init. Creates the form
      */
     public ngOnInit(): void {
+        this.configService.get<string>('general_stimmung_url').subscribe(val => {
+            if(val != '') {
+                this.apiUrl = val.replace('datasource','raise');
+            }
+        });
+        this.configService.get<string>('general_stimmung_token').subscribe(val => {
+            this.apiToken = val;
+        });
     }
 
     /**
@@ -95,12 +107,9 @@ export class StimmungOverlayComponent extends BaseViewComponent implements OnIni
             this.isLocked = false;
         }, 30000);
 
-        //const url ='https://srv02.loebling-it.de:8080/api/raise';
-        const url = 'https://stmg.digiv.de/raise';
-
-        this.httpCli.post(url,requestData,
+        this.httpCli.post(this.apiUrl,requestData,
             {headers: new HttpHeaders({
-                'Authorization': 'Bearer 348eogdihvklnq2w0p93pqtoejgvfcub'
+                'Authorization': this.apiToken
             })}).subscribe();
     }
 }

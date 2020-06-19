@@ -10,19 +10,17 @@
         <span>Dein GO-Antrag wurde gesendet!</span>
     </div>
 
-    <h3>Stimmungskarte heben</h3>
-    <div class="st-karten">
+    <h3 *ngIf="apiUrl">Stimmungskarte heben</h3>
+    <div class="st-karten" *ngIf="apiUrl">
         <div class="alert" *ngIf="isLocked">
             <span>Stimmungskarten können nur alle 30 Sekunden gehoben werden - bitte warte kurz</span>
         </div>
-
         <div *ngIf="!isLocked" (click)="hebeKarte(1)" class="st-karte st-gruen">OK</div>
 
         <div *ngIf="!isLocked" (click)="hebeKarte(2)" class="st-karte st-gelb">???</div>
 
         <div *ngIf="!isLocked" (click)="hebeKarte(3)" class="st-karte st-rot">Nee</div>   
     </div>
-
 </div>
 
 <div mat-dialog-actions>
