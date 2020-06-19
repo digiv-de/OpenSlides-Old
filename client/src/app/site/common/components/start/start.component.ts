@@ -43,7 +43,7 @@ export class StartComponent extends BaseViewComponent implements OnInit {
     public stimmungApiData: any = [{anz:0},{anz:0},{anz:0}];
     private counter: any = null;
     private subscription: any = null;
-    private apiUrl: string = 'https://stmg.digiv.de/datasource';
+    private apiUrl: string = '';
 
     /**
      * Formular for the content.
@@ -102,28 +102,39 @@ export class StartComponent extends BaseViewComponent implements OnInit {
             this.startContent.general_event_welcome_text = this.translate.instant(welcomeText);
         });
 
-        // Api Daten initial aufrufen
-        fetch(this.apiUrl)
-           .then(response => response.json())
-        .then(resp => {
-            this.stimmungApiData = resp;
-        });
-
-        // Api Aufrufen alle 4 sekunden
-        this.counter = interval(4000);
-        
-        this.subscription = this.counter.subscribe(x => {
-            fetch(this.apiUrl)
-                .then(response => response.json())
+        this.configService.get<string>('general_stimmung_url').subscribe(val => {
+            this.apiUrl = val;
+            // Api Aufrufen alle 4 sekunden
+            if(val != '') {
+                // Api Daten initial aufrufen
+                fetch(this.apiUrl)
+                   .then(response => response.json())
                 .then(resp => {
                     this.stimmungApiData = resp;
                 });
+                if(this.subscription == null) {
+                    this.counter = interval(4000);
+                    this.subscription = this.counter.subscribe(() => {
+                        fetch(this.apiUrl)
+                            .then(response => response.json())
+                            .then(resp => {
+                                this.stimmungApiData = resp;
+                            });
+                    });
+                }
+            } else {
+                if(this.subscription) {
+                    this.subscription.unsubscribe();
+                }
+                this.counter = null;
+            }
         });
     }
 
     public ngOnDestroy(): void {
-        console.log('____________');
-        this.subscription.unsubscribe();
+        if(this.subscription) {
+            this.subscription.unsubscribe();
+        }
         //window.clearInterval(this.counter);
     }
     /**

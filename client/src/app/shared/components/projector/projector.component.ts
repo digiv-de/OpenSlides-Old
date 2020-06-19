@@ -31,7 +31,7 @@ export class ProjectorComponent extends BaseComponent implements OnDestroy {
     public stimmungApiData: any = [{anz:0},{anz:0},{anz:0}];
     private counter: any = null;
     private subscription: any = null;
-    private apiUrl: string = 'https://stmg.digiv.de/datasource';
+    private apiUrl: string = '';
 
     @Input()
     public set projector(projector: ViewProjector) {
@@ -204,6 +204,25 @@ export class ProjectorComponent extends BaseComponent implements OnDestroy {
         this.configService.get<string>('general_event_description').subscribe(val => (this.eventDescription = val));
         this.configService.get<string>('general_event_date').subscribe(val => (this.eventDate = val));
         this.configService.get<string>('general_event_location').subscribe(val => (this.eventLocation = val));
+        this.configService.get<string>('general_stimmung_url').subscribe(val => {
+            this.apiUrl = val;
+            // Api Aufrufen alle 4 sekunden
+            if(val != '') {
+                this.counter = interval(4000);
+                this.subscription = this.counter.subscribe(() => {
+                    fetch(this.apiUrl)
+                        .then(response => response.json())
+                        .then(resp => {
+                            this.stimmungApiData = resp;
+                        });
+                });
+            } else {
+                if(this.subscription) {
+                    this.subscription.unsubscribe();
+                }
+                this.counter = null;
+            }
+        });
 
         // Watches for resizing of the container.
         this.resizeSubject.subscribe(() => {
@@ -329,25 +348,6 @@ export class ProjectorComponent extends BaseComponent implements OnDestroy {
         }
     }
 
-    public ngOnInit(): void {
-        // Api Daten initial aufrufen
-        fetch(this.apiUrl)
-           .then(response => response.json())
-        .then(resp => {
-            this.stimmungApiData = resp;
-        });
-
-        // Api Aufrufen alle 4 sekunden
-        this.counter = interval(4000);
-        
-        this.subscription = this.counter.subscribe(x => {
-            fetch(this.apiUrl)
-                .then(response => response.json())
-                .then(resp => {
-                    this.stimmungApiData = resp;
-                });
-        });
-    }
     /**
      * Deregister the projector from the projectordataservice.
      */
@@ -360,6 +360,9 @@ export class ProjectorComponent extends BaseComponent implements OnDestroy {
         if (this.offlineSubscription) {
             this.offlineSubscription.unsubscribe();
             this.offlineSubscription = null;
+        }
+        if(this.subscription){
+            this.subscription.unsubscribe();
         }
     }
 }
