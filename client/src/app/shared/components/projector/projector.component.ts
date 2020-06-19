@@ -28,7 +28,7 @@ export class ProjectorComponent extends BaseComponent implements OnDestroy {
      */
     private projectorId: number | null = null;
 
-    public stimmungApiData: any = [{anz:0},{anz:0},{anz:0}];
+    public stimmungApiData: any = [{ anz: 0 }, { anz: 0 }, { anz: 0 }];
     private counter: any = null;
     private subscription: any = null;
     private apiUrl: string = '';
@@ -94,23 +94,23 @@ export class ProjectorComponent extends BaseComponent implements OnDestroy {
             backgroundImage: string;
         };
     } = {
-        container: {
-            height: '0px'
-        },
-        projector: {
-            transform: 'none',
-            width: '0px',
-            height: '0px',
-            color: 'black',
-            backgroundColor: 'white',
-            H1Color: '#317796'
-        },
-        headerFooter: {
-            color: 'white',
-            backgroundColor: '#317796',
-            backgroundImage: 'none'
-        }
-    };
+            container: {
+                height: '0px'
+            },
+            projector: {
+                transform: 'none',
+                width: '0px',
+                height: '0px',
+                color: 'black',
+                backgroundColor: 'white',
+                H1Color: '#317796'
+            },
+            headerFooter: {
+                color: 'white',
+                backgroundColor: '#317796',
+                backgroundImage: 'none'
+            }
+        };
 
     /**
      * All slides to show on this projector
@@ -206,23 +206,24 @@ export class ProjectorComponent extends BaseComponent implements OnDestroy {
         this.configService.get<string>('general_event_location').subscribe(val => (this.eventLocation = val));
         this.configService.get<string>('general_stimmung_url').subscribe(val => {
             this.apiUrl = val;
-            // Api Aufrufen alle 4 sekunden
-            if(val != '') {
-                this.counter = interval(4000);
-                this.subscription = this.counter.subscribe(() => {
-                    fetch(this.apiUrl)
-                        .then(response => response.json())
-                        .then(resp => {
-                            this.stimmungApiData = resp;
-                        });
-                });
-            } else {
-                if(this.subscription) {
-                    this.subscription.unsubscribe();
-                }
-                this.counter = null;
-            }
         });
+
+        // Api Aufrufen alle 4 sekunden
+        if (this.apiUrl != '') {
+            this.counter = interval(4000);
+            this.subscription = this.counter.subscribe(() => {
+                fetch(this.apiUrl)
+                    .then(response => response.json())
+                    .then(resp => {
+                        this.stimmungApiData = resp;
+                    });
+            });
+        } else {
+            if (this.subscription) {
+                this.subscription.unsubscribe();
+            }
+            window.clearInterval(this.counter);
+        }
 
         // Watches for resizing of the container.
         this.resizeSubject.subscribe(() => {
@@ -361,8 +362,9 @@ export class ProjectorComponent extends BaseComponent implements OnDestroy {
             this.offlineSubscription.unsubscribe();
             this.offlineSubscription = null;
         }
-        if(this.subscription){
+        if (this.subscription) {
             this.subscription.unsubscribe();
+            window.clearInterval(this.counter);
         }
     }
 }

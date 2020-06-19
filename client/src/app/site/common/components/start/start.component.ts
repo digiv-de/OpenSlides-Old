@@ -40,7 +40,7 @@ export class StartComponent extends BaseViewComponent implements OnInit {
     public isLocked = false;
     public isAntragSend = false;
 
-    public stimmungApiData: any = [{anz:0},{anz:0},{anz:0}];
+    public stimmungApiData: any = [{ anz: 0 }, { anz: 0 }, { anz: 0 }];
     private counter: any = null;
     private subscription: any = null;
     private apiUrl: string = '';
@@ -104,38 +104,39 @@ export class StartComponent extends BaseViewComponent implements OnInit {
 
         this.configService.get<string>('general_stimmung_url').subscribe(val => {
             this.apiUrl = val;
-            // Api Aufrufen alle 4 sekunden
-            if(val != '') {
-                // Api Daten initial aufrufen
-                fetch(this.apiUrl)
-                   .then(response => response.json())
+        });
+
+        // Api Aufrufen alle 4 sekunden
+        if (this.apiUrl != '') {
+            // Api Daten initial aufrufen
+            fetch(this.apiUrl)
+                .then(response => response.json())
                 .then(resp => {
                     this.stimmungApiData = resp;
                 });
-                if(this.subscription == null) {
-                    this.counter = interval(4000);
-                    this.subscription = this.counter.subscribe(() => {
-                        fetch(this.apiUrl)
-                            .then(response => response.json())
-                            .then(resp => {
-                                this.stimmungApiData = resp;
-                            });
-                    });
-                }
-            } else {
-                if(this.subscription) {
-                    this.subscription.unsubscribe();
-                }
-                this.counter = null;
+            if (this.subscription == null) {
+                this.counter = interval(4000);
+                this.subscription = this.counter.subscribe(() => {
+                    fetch(this.apiUrl)
+                        .then(response => response.json())
+                        .then(resp => {
+                            this.stimmungApiData = resp;
+                        });
+                });
             }
-        });
+        } else {
+            if (this.subscription) {
+                this.subscription.unsubscribe();
+            }
+            window.clearInterval(this.counter);
+        }
     }
 
     public ngOnDestroy(): void {
-        if(this.subscription) {
+        if (this.subscription) {
+            window.clearInterval(this.counter);
             this.subscription.unsubscribe();
         }
-        //window.clearInterval(this.counter);
     }
     /**
      * Changes to editing mode.
@@ -174,21 +175,21 @@ export class StartComponent extends BaseViewComponent implements OnInit {
      */
     public async goAntrag() {
         // Neue Message erstellen
-        const theId:any = await this.projectorMessageRepositoryService.create(new ProjectorMessage({
+        const theId: any = await this.projectorMessageRepositoryService.create(new ProjectorMessage({
             message: `<p style="font-size: 45px;">GO-Antrag</p>\n<p style="font-size: 35px;">von ${this.operator.user.first_name} ${this.operator.user.last_name} gestellt`
         }));
         // console.log('erzeugt wurde: '+theId.id);
-        
+
         // 1. Projektor holen
         //var proj: Projector = new Projector({id: 1});
         //console.log('---- proj ----');
         //console.log(proj);
-        
+
         // Anzeigen
         //this.projectorService.projectOn(proj,this.projectorMessageRepositoryService.getViewModel(theId.id))
         const requestData: any = {};
-        requestData.elements = [{"stable": false, "name": "core/projector-message", "id":theId.id}];
-        
+        requestData.elements = [{ "stable": false, "name": "core/projector-message", "id": theId.id }];
+
         await this.http.post('/rest/core/projector/1/project/', requestData);
 
         this.isAntragSend = true;
@@ -203,11 +204,11 @@ export class StartComponent extends BaseViewComponent implements OnInit {
      */
     public async hebeKarte(typ: number) {
         const requestData: any = {};
-        
+
         requestData.typ = typ;
-        requestData.ts = Math.round(+new Date()/1000);
+        requestData.ts = Math.round(+new Date() / 1000);
         requestData.user = this.operator.user.first_name;
-        
+
         //console.log(requestData);
         //console.log('-------------');
 
@@ -216,12 +217,14 @@ export class StartComponent extends BaseViewComponent implements OnInit {
             this.isLocked = false;
         }, 30000);
 
-        const url ='https://srv02.loebling-it.de:8080/api/raise';
+        const url = 'https://srv02.loebling-it.de:8080/api/raise';
         //const url = 'https://stimmung-test.bv.dpsg.de/raise';
 
-        this.httpCli.post(url,requestData,
-            {headers: new HttpHeaders({
-                'Authorization': 'Bearer 348eogdihvklnq2w0p93pqtoejgvfcub'
-            })}).subscribe();
+        this.httpCli.post(url, requestData,
+            {
+                headers: new HttpHeaders({
+                    'Authorization': 'Bearer 348eogdihvklnq2w0p93pqtoejgvfcub'
+                })
+            }).subscribe();
     }
 }
