@@ -324,7 +324,7 @@ export class MotionRepositoryService extends BaseIsAgendaItemAndListOfSpeakersCo
             type: 'custom',
             ownKey: 'diffLines',
             get: (motion: Motion, viewMotion: ViewMotion) => {
-                if (viewMotion.parent) {
+                if (viewMotion.parent && viewMotion.isParagraphBasedAmendment()) {
                     const changeRecos = viewMotion.changeRecommendations.filter(changeReco =>
                         changeReco.showInFinalView()
                     );
@@ -335,6 +335,8 @@ export class MotionRepositoryService extends BaseIsAgendaItemAndListOfSpeakersCo
                         changeRecos,
                         false
                     );
+                } else {
+                    return [];
                 }
             },
             getCacheObjectToCheck: (viewMotion: ViewMotion) => viewMotion.parent
@@ -796,7 +798,7 @@ export class MotionRepositoryService extends BaseIsAgendaItemAndListOfSpeakersCo
             }
         });
 
-        return amendment.amendment_paragraphs.map((newText: string, paraNo: number) => {
+        return amendment.amendment_paragraphs?.map((newText: string, paraNo: number) => {
             let paragraph: string;
             let paragraphHasChanges;
 
@@ -835,7 +837,9 @@ export class MotionRepositoryService extends BaseIsAgendaItemAndListOfSpeakersCo
     }
 
     /**
-     * Returns all paragraph lines that are affected by the given amendment in diff-format, including context
+     * Returns all paragraph lines that are affected by the given amendment in diff-format, including context.
+     *
+     * Should only be called for paragraph-based amendments.
      *
      * @param {ViewMotion} amendment
      * @param {number} lineLength
@@ -862,7 +866,7 @@ export class MotionRepositoryService extends BaseIsAgendaItemAndListOfSpeakersCo
         }
 
         return amendmentParagraphs
-            .map(
+            ?.map(
                 (newText: string, paraNo: number): DiffLinesInParagraph => {
                     if (newText !== null) {
                         return this.diff.getAmendmentParagraphsLines(
@@ -933,7 +937,7 @@ export class MotionRepositoryService extends BaseIsAgendaItemAndListOfSpeakersCo
         const changedAmendmentParagraphs = this.applyChangesToAmendment(amendment, lineLength, changeRecos, false);
 
         return changedAmendmentParagraphs
-            .map(
+            ?.map(
                 (newText: string, paraNo: number): ViewMotionAmendedParagraph => {
                     if (newText === null) {
                         return null;

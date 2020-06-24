@@ -41,7 +41,7 @@
                 {{ assignment.getListTitle() }}
             </div>
             <mat-chip-list class="ellipsis-overflow" *ngIf="vp.isMobile">
-                <mat-chip color="primary" selected>
+                <mat-chip color="" selected>
                     {{ assignment.phaseString | translate }}
                 </mat-chip>
             </mat-chip-list>
@@ -96,14 +96,16 @@
         </button>
         <button mat-menu-item (click)="downloadAssignmentButton()">
             <mat-icon>archive</mat-icon>
-            <span>{{ 'Export ...' | translate }}</span>
+            <span>{{ 'Export as PDF' | translate }}</span>
         </button>
-        <mat-divider></mat-divider>
-        <!-- Settings -->
-        <button mat-menu-item *osPerms="'core.can_manage_config'" routerLink="/settings/elections">
-            <mat-icon>settings</mat-icon>
-            <span>{{ 'Settings' | translate }}</span>
-        </button>
+        <div *osPerms="'core.can_manage_config'">
+            <mat-divider></mat-divider>
+            <!-- Settings -->
+            <button mat-menu-item routerLink="/settings/elections">
+                <mat-icon>settings</mat-icon>
+                <span>{{ 'Settings' | translate }}</span>
+            </button>
+        </div>
     </div>
 
     <div *ngIf="isMultiSelect">

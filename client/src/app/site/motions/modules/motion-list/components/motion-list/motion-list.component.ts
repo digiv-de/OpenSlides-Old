@@ -7,6 +7,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { PblColumnDefinition } from '@pebula/ngrid';
 
+import { OperatorService } from 'app/core/core-services/operator.service';
 import { StorageService } from 'app/core/core-services/storage.service';
 import { CategoryRepositoryService } from 'app/core/repositories/motions/category-repository.service';
 import { MotionBlockRepositoryService } from 'app/core/repositories/motions/motion-block-repository.service';
@@ -140,6 +141,11 @@ export class MotionListComponent extends BaseListViewComponent<ViewMotion> imple
     public statutesEnabled: boolean;
 
     /**
+     * Value of the configuration variable `motions_amendments_enabled` - are amendments enabled?
+     */
+    public amendmentsEnabled: boolean;
+
+    /**
      * Value of the config variable `motions_show_sequential_numbers`
      */
     public showSequential: boolean;
@@ -217,7 +223,8 @@ export class MotionListComponent extends BaseListViewComponent<ViewMotion> imple
         public perms: LocalPermissionsService,
         private motionExport: MotionExportService,
         private overlayService: OverlayService,
-        public vp: ViewportService
+        public vp: ViewportService,
+        public operator: OperatorService
     ) {
         super(titleService, translate, matSnackBar, storage);
         this.canMultiSelect = true;
@@ -235,6 +242,9 @@ export class MotionListComponent extends BaseListViewComponent<ViewMotion> imple
         this.configService
             .get<boolean>('motions_statutes_enabled')
             .subscribe(enabled => (this.statutesEnabled = enabled));
+        this.configService
+            .get<boolean>('motions_amendments_enabled')
+            .subscribe(enabled => (this.amendmentsEnabled = enabled));
         this.configService.get<string>('motions_recommendations_by').subscribe(recommender => {
             this.recommendationEnabled = !!recommender;
         });

@@ -9,7 +9,7 @@ import {
     ViewEncapsulation
 } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { MatDialog } from '@angular/material/dialog';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -58,6 +58,8 @@ export class MediafileListComponent extends BaseListViewComponent<ViewMediafile>
      * Holds the file to edit
      */
     public fileToEdit: ViewMediafile;
+
+    private dialogRef: MatDialogRef<any>;
 
     public newDirectoryForm: FormGroup;
     public moveForm: FormGroup;
@@ -253,7 +255,6 @@ export class MediafileListComponent extends BaseListViewComponent<ViewMediafile>
      */
     public showFileMenu(file: ViewMediafile): boolean {
         return (
-            this.operator.hasPerms(Permission.agendaCanSeeListOfSpeakers) ||
             (file.isProjectable() && this.operator.hasPerms(Permission.coreCanManageProjector)) ||
             (file.isFont() && this.operator.hasPerms(Permission.coreCanManageLogosAndFonts)) ||
             (file.isImage() && this.operator.hasPerms(Permission.coreCanManageLogosAndFonts)) ||
@@ -334,9 +335,9 @@ export class MediafileListComponent extends BaseListViewComponent<ViewMediafile>
                 access_groups_id: [file.access_groups_id]
             });
 
-            const dialogRef = this.dialog.open(this.fileEditDialog, infoDialogSettings);
+            this.dialogRef = this.dialog.open(this.fileEditDialog, infoDialogSettings);
 
-            dialogRef.keydownEvents().subscribe((event: KeyboardEvent) => {
+            this.dialogRef.keydownEvents().subscribe((event: KeyboardEvent) => {
                 if (event.key === 'Enter' && event.shiftKey && this.fileEditForm.valid) {
                     this.onSaveEditedFile(this.fileEditForm.value);
                 }
@@ -349,7 +350,7 @@ export class MediafileListComponent extends BaseListViewComponent<ViewMediafile>
      */
     public onSaveEditedFile(value: Partial<Mediafile>): void {
         this.repo.update(value, this.fileToEdit).then(() => {
-            this.dialog.closeAll();
+            this.dialogRef.close();
         }, this.raiseError);
     }
 
