@@ -28,6 +28,8 @@ export class StimmungOverlayComponent extends BaseViewComponent implements OnIni
     public isAntragSend = false;
     public apiUrl: string = '';
     private apiToken: string = '';
+    public goAntraege: [] = [];
+    public selGoAntrag: string = '';
 
     /**
      * Constructor
@@ -66,6 +68,9 @@ export class StimmungOverlayComponent extends BaseViewComponent implements OnIni
         this.configService.get<string>('general_stimmung_token').subscribe(val => {
             this.apiToken = val;
         });
+        this.configService.get<string>('go_antraege').subscribe(val => {
+            this.goAntraege = JSON.parse(val);
+        });
     }
 
     /**
@@ -75,11 +80,10 @@ export class StimmungOverlayComponent extends BaseViewComponent implements OnIni
     public async goAntrag() {
         // Neue Message erstellen
         const theId: any = await this.projectorMessageRepositoryService.create(new ProjectorMessage({
-            message: `<p style="font-size: 45px;">GO-Antrag</p>\n<p style="font-size: 35px;">von ${this.operator.user.first_name} ${this.operator.user.last_name} gestellt`
+            message: `<p style="font-size: 45px;">GO-Antrag</p>\n<p style="font-size: 35px;">auf ${this.goAntraege[this.selGoAntrag]}<br>von ${this.operator.user.first_name} ${this.operator.user.last_name} gestellt`
         }));
        
         // Anzeigen
-        //this.projectorService.projectOn(proj,this.projectorMessageRepositoryService.getViewModel(theId.id))
         const requestData: any = {};
         requestData.elements = [{"stable": false, "name": "core/projector-message", "id":theId.id}];
         

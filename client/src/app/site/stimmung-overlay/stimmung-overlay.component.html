@@ -3,9 +3,18 @@
 </h1>
 <div mat-dialog-content>
     <h3>GO-Antrag</h3>
-    <button (click)="goAntrag()" class="goBtn">
-        <mat-icon style="vertical-align: middle;">accessibility_new</mat-icon>
-        GO Antrag stellen</button>
+    <p>ich stelle einen GO auf:
+        <mat-form-field>
+            <mat-select [(value)]="selGoAntrag">
+                <mat-option *ngFor="let x of goAntraege; let indexOfelement=index" [value]="indexOfelement">
+                    {{x}}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+    </p>
+    <button mat-stroked-button [disabled]="selGoAntrag === ''" (click)="goAntrag()">
+        <mat-icon style="vertical-align: middle;">accessibility_new</mat-icon> GO Antrag stellen
+    </button>
     <div class="alert" *ngIf="isAntragSend">
         <span>Dein GO-Antrag wurde gesendet!</span>
     </div>
@@ -19,7 +28,7 @@
 
         <div *ngIf="!isLocked" (click)="hebeKarte(2)" class="st-karte st-gelb">???</div>
 
-        <div *ngIf="!isLocked" (click)="hebeKarte(3)" class="st-karte st-rot">Nee</div>   
+        <div *ngIf="!isLocked" (click)="hebeKarte(3)" class="st-karte st-rot">Nee</div>
     </div>
 </div>
 
