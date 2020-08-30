@@ -17,7 +17,7 @@
                 "build": {
                     "builder": "@angular-devkit/build-angular:browser",
                     "options": {
-                        "outputPath": "../openslides/static",
+                        "outputPath": "static",
                         "index": "src/index.html",
                         "main": "src/main.ts",
                         "polyfills": "src/polyfills.ts",
@@ -28,18 +28,8 @@
                             "src/manifest.json",
                             {
                                 "glob": "**/*",
-                                "input": "node_modules/tinymce/skins",
-                                "output": "/tinymce/skins/"
-                            },
-                            {
-                                "glob": "**/*",
-                                "input": "node_modules/tinymce/themes",
-                                "output": "/tinymce/themes/"
-                            },
-                            {
-                                "glob": "**/*",
-                                "input": "node_modules/tinymce/plugins",
-                                "output": "/tinymce/plugins/"
+                                "input": "node_modules/tinymce",
+                                "output": "/tinymce/"
                             }
                         ],
                         "styles": ["src/styles.scss"],

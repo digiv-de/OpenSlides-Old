@@ -1,44 +1,56 @@
 <!-- iFrame Dialog -->
-<ng-template #conferenceDialog>
-    <div class="jitsi-iframe-wrapper" #jitsi></div>
-    <div mat-dialog-actions>
-        <button
-            type="button"
-            mat-button
-            color=""
-            (click)="openExternal()"
-            matTooltip="{{ 'Open Jitsi in new tab' | translate }}"
-        >
-            <mat-icon>open_in_new</mat-icon>
-        </button>
+<div class="jitsi-fake-dialog-wrapper" [ngClass]="{ 'jitsi-dialog-hide': !isJitsiDialogOpen }">
+    <mat-card class="jitsi-fake-dialog">
+        <div class="jitsi-iframe-wrapper" #jitsi></div>
+        <div class="jitsi-dialog-actions">
+            <div>
+                <a
+                    type="button"
+                    mat-icon-button
+                    color="primary"
+                    matTooltip="{{ 'Open Jitsi in new tab' | translate }}"
+                    target="_blank"
+                    (click)="stopJitsi()"
+                    [href]="jitsiMeetUrl"
+                >
+                    <mat-icon>open_in_new</mat-icon>
+                </a>
+            </div>
 
-        <button
-            class="minimize-jitsi-dialog-button"
-            type="button"
-            mat-button
-            color="primary"
-            (click)="hideJitsiDialog()"
-        >
-            <span>{{ 'Minimize' | translate }}</span>
-            <mat-icon>fullscreen_exit</mat-icon>
-        </button>
-    </div>
-</ng-template>
+            <div>
+                <button
+                    class="dialog-hangup"
+                    type="button"
+                    mat-button
+                    color="warn"
+                    (click)="!!videoStreamUrl ? viewStream() : stopJitsi()"
+                >
+                    <os-icon-container icon="{{ !!videoStreamUrl ? 'meeting_room' : 'call_end' }}">
+                        <span *ngIf="videoStreamUrl">
+                            {{ 'Exit conference' | translate }}
+                        </span>
+                        <span *ngIf="!videoStreamUrl">
+                            {{ 'Hang up' | translate }}
+                        </span>
+                    </os-icon-container>
+                </button>
+            </div>
+
+            <div>
+                <button class="dialog-hide" type="button" mat-button color="primary" (click)="hideJitsiDialog()">
+                    <os-icon-container icon="aspect_ratio">
+                        <span>{{ 'Minimize' | translate }}</span>
+                    </os-icon-container>
+                </button>
+            </div>
+        </div>
+    </mat-card>
+</div>
 
 <div class="jitsi-integration" *ngIf="enableJitsi || (videoStreamUrl && canSeeLiveStream)">
     <!-- Audio-Conference-bar -->
-    <div
-        class="jitsi-bar"
-        [ngClass]="{
-            'cast-shadow': !showJitsiWindow
-        }"
-    >
-        <span
-            class="control-icon-wrapper apply-theme"
-            [ngClass]="{
-                'cast-shadow': showJitsiWindow
-            }"
-        >
+    <div class="jitsi-bar">
+        <span class="control-icon-wrapper apply-theme">
             <ng-container *ngIf="currentState == state.jitsi">
                 <!-- Exit jitsi -->
                 <button
@@ -47,7 +59,7 @@
                     color="accent"
                     (click)="viewStream()"
                     matTooltip="{{ 'Exit live conference and continue livestream' | translate }}"
-                    *ngIf="videoStreamUrl && canSeeLiveStream"
+                    *ngIf="videoStreamUrl && canSeeLiveStream && !isJitsiDialogOpen"
                 >
                     <mat-icon color="warn">
                         meeting_room
@@ -58,7 +70,7 @@
                 <button
                     class="indicator quick-icon"
                     mat-mini-fab
-                    *ngIf="isJoined"
+                    *ngIf="isJoined && !isJitsiDialogOpen"
                     (click)="toggleMute()"
                     matTooltip="{{ 'Mute / Unmute' | translate }}"
                 >
@@ -73,15 +85,28 @@
                 <!-- Enter conference from stream -->
                 <button
                     *ngIf="enableJitsi && isAccessPermitted"
-                    class="indicator quick-icon"
+                    class="quick-icon indicator"
                     mat-mini-fab
                     (click)="enterConversation()"
                     matTooltip="{{ 'Enter live conference' | translate }}"
                 >
-                    <mat-icon color="primary">meeting_room</mat-icon>
+                    <mat-icon color="primary" [@fadeInOut]="isEnterMeetingRoomVisible" (@fadeInOut.done)="triggerMeetingRoomButtonAnimation()">
+                        meeting_room
+                    </mat-icon>
                 </button>
 
-                <mat-icon *ngIf="enableJitsi && !isAccessPermitted" class="indicator">no_meeting_room</mat-icon>
+                <a
+                    class="indicator"
+                    type="button"
+                    mat-icon-button
+                    matTooltip="{{ 'Add yourself to the current list of speakers to join the conference' | translate }}"
+                    *ngIf="enableJitsi && !isAccessPermitted"
+                    [routerLink]="['/agenda/speakers']"
+                >
+                    <mat-icon>
+                        no_meeting_room
+                    </mat-icon>
+                </a>
             </ng-container>
         </span>
 
@@ -96,7 +121,7 @@
             <!-- open-window button -->
             <button class="toggle-list-button" mat-button (click)="toggleShowJitsi()">
                 <ng-container *ngIf="currentState == state.jitsi">
-                    <span> {{ 'Live conference' | translate }}</span>
+                    <div class="ellipsis-overflow">{{ 'Live conference' | translate }}</div>
                     <div class="one-line">
                         &nbsp;
                         <span *ngIf="currentDominantSpeaker">
@@ -112,8 +137,8 @@
                 </ng-container>
 
                 <ng-container *ngIf="currentState == state.stream">
-                    <!-- os-icon-container does weid things here -->
-                    <span> {{ 'Livestream' | translate }}</span>
+                    <!-- os-icon-container does weird things here -->
+                    <div class="ellipsis-overflow">{{ 'Livestream' | translate }}</div>
                 </ng-container>
 
                 <mat-icon class="opened-indicator" *ngIf="!showJitsiWindow">keyboard_arrow_up</mat-icon>
@@ -172,7 +197,7 @@
                     <os-vjs-player
                         [videoUrl]="videoStreamUrl"
                         (started)="onSteamStarted()"
-                        *ngIf="canSeeLiveStream && !streamActiveInAnotherTab || streamRunning"
+                        *ngIf="(canSeeLiveStream && !streamActiveInAnotherTab) || streamRunning"
                     ></os-vjs-player>
                     <div class="disconnected" *ngIf="streamActiveInAnotherTab && !streamRunning">
                         <span>{{ 'The livestream is already running in your OpenSlides session.' | translate }}</span>
@@ -221,10 +246,10 @@
                                 color="accent"
                                 (click)="toggleConferenceDialog()"
                                 [disabled]="!isJitsiActive"
-                                matTooltip="{{ 'Maximize / minimize Jitsi window' | translate }}"
+                                matTooltip="{{ 'Show/Hide video conference' | translate }}"
                             >
                                 <mat-icon>
-                                    {{ isJitsiDialogOpen ? 'fullscreen_exit' : 'fullscreen' }}
+                                    {{ isJitsiDialogOpen ? 'aspect_ratio' : 'voice_chat' }}
                                 </mat-icon>
                             </button>
                         </div>

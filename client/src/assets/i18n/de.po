@@ -106,6 +106,10 @@ msgstr "Zur Tagesordnung hinzufügen"
 msgid "Add to queue"
 msgstr "Zur Warteschlange hinzufügen"
 
+msgid "Add yourself to the current list of speakers to join the conference"
+msgstr ""
+"Setzen Sie sich auf die aktuelle Redeliste um der Konferenz hier beizutreten"
+
 msgid "Add/remove groups ..."
 msgstr "Gruppen hinzufügen/entfernen ..."
 
@@ -671,6 +675,9 @@ msgstr "Kommentar"
 msgid "Comment fields"
 msgstr "Kommentarfelder"
 
+msgid "Comment {arg1} updated"
+msgstr "Kommentar {arg1} aktualisiert"
+
 msgid "Comments"
 msgstr "Kommentare"
 
@@ -1102,6 +1109,9 @@ msgstr "Veranstalter"
 msgid "Exit"
 msgstr "Beenden"
 
+msgid "Exit conference"
+msgstr "Konferenz beenden"
+
 msgid "Exit live conference and continue livestream"
 msgstr "Livekonferenz verlassen und Livestream fortsetzen"
 
@@ -1230,6 +1240,9 @@ msgstr "Gruppen mit Schreibberechtigungen"
 
 msgid "Guest"
 msgstr "Gast"
+
+msgid "Hang up"
+msgstr "Auflegen"
 
 msgid "Has amendments"
 msgstr "Hat Änderungsanträge"
@@ -1500,6 +1513,9 @@ msgstr "Daten werden geladen. Bitte warten ..."
 msgid "Login"
 msgstr "Anmelden"
 
+msgid "Login anyway"
+msgstr "Trotzdem anmelden"
+
 msgid "Login as guest"
 msgstr "Als Gast anmelden"
 
@@ -1514,9 +1530,6 @@ msgstr "Als persönlichen Favorit markieren"
 
 msgid "Mark speaker"
 msgstr "Redner/in markieren"
-
-msgid "Maximize / minimize Jitsi window"
-msgstr "Jitsi-Fenster maximieren/minimieren"
 
 msgid "Media file"
 msgstr "Mediendatei"
@@ -1544,6 +1557,9 @@ msgstr "Antrag"
 
 msgid "Motion block"
 msgstr "Antragsblock"
+
+msgid "Motion block set to"
+msgstr "Antragsblock gesetzt auf"
 
 msgid "Motion blocks"
 msgstr "Antragsblöcke"
@@ -1907,8 +1923,8 @@ msgstr "OpenSlides-Zugangsdaten"
 msgid "OpenSlides is temporarily reset to following timestamp"
 msgstr "OpenSlides ist vorübergehend auf folgenden Zeitpunkt zurückgesetzt:"
 
-msgid "OpenSlides recommends:"
-msgstr "OpenSlides empfiehlt:"
+msgid "OpenSlides recommends"
+msgstr "OpenSlides empfiehlt"
 
 msgid "Origin"
 msgstr "Herkunft"
@@ -2044,6 +2060,15 @@ msgid "Please update your browser or contact your system administration."
 msgstr ""
 "Bitte aktualisieren Sie Ihren Browser oder kontaktieren Sie Ihre "
 "Systemadministration."
+
+msgid "Poll created"
+msgstr "Abstimmung erstellt"
+
+msgid "Poll deleted"
+msgstr "Abstimmung gelöscht"
+
+msgid "Poll updated"
+msgstr "Abstimmung aktualisiert"
 
 msgid "Preamble text for PDF document (all elections)"
 msgstr "Einleitungstext für PDF-Dokument (alle Wahlen) "
@@ -2487,6 +2512,9 @@ msgstr "Diesen Text auf der Login-Seite anzeigen"
 msgid "Show title"
 msgstr "Veranstaltungstitel anzeigen"
 
+msgid "Show/Hide video conference"
+msgstr "Videokonferenz anzeigen/verstecken"
+
 msgid "Simple Workflow"
 msgstr "Einfacher Arbeitsablauf"
 
@@ -2516,9 +2544,6 @@ msgstr "Kommentare sortieren"
 
 msgid "Sort election results by amount of votes"
 msgstr "Wahlergebnisse nach Stimmanzahl sortieren"
-
-msgid "Sort list of speakers"
-msgstr "Redeliste sortieren"
 
 msgid "Sort motions"
 msgstr "Anträge sortieren"
@@ -3210,6 +3235,12 @@ msgstr "abgeschlossen (unveröffentlicht)"
 msgid "fullscreen"
 msgstr "Vollbild"
 
+msgid "green"
+msgstr "grün"
+
+msgid "grey"
+msgstr "grau"
+
 msgid "has saved his work on this motion."
 msgstr "hat die Arbeit an diesem Antrag gespeichert."
 
@@ -3239,6 +3270,9 @@ msgstr "Einträge pro Seite"
 
 msgid "items selected"
 msgstr "Einträge ausgewählt"
+
+msgid "lightblue"
+msgstr "hellblau"
 
 msgid "majority"
 msgstr "Mehrheit"
@@ -3282,6 +3316,9 @@ msgstr "von"
 msgid "open votes"
 msgstr "offene Stimmabgaben"
 
+msgid "or"
+msgstr "oder"
+
 msgid "outside"
 msgstr "außerhalb"
 
@@ -3299,6 +3336,9 @@ msgstr "öffentlich"
 
 msgid "published"
 msgstr "veröffentlicht"
+
+msgid "red"
+msgstr "rot"
 
 msgid "refered to committee"
 msgstr "in Ausschuss verwiesen"
@@ -3350,3 +3390,6 @@ msgstr "mit Filter"
 
 msgid "withdrawed"
 msgstr "zurückgezogen"
+
+msgid "yellow"
+msgstr "gelb"

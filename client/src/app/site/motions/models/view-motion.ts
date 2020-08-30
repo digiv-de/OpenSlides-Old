@@ -9,6 +9,7 @@ import { TitleInformationWithAgendaItem } from 'app/site/base/base-view-model-wi
 import { BaseViewModelWithAgendaItemAndListOfSpeakers } from 'app/site/base/base-view-model-with-agenda-item-and-list-of-speakers';
 import { ProjectorElementBuildDeskriptor } from 'app/site/base/projectable';
 import { Searchable } from 'app/site/base/searchable';
+import { SlideOptions } from 'app/site/base/slide-options';
 import { ViewMediafile } from 'app/site/mediafiles/models/view-mediafile';
 import { ViewTag } from 'app/site/tags/models/view-tag';
 import { ViewUser } from 'app/site/users/models/view-user';
@@ -139,6 +140,10 @@ export class ViewMotion extends BaseViewModelWithAgendaItemAndListOfSpeakers<Mot
 
     public get hasSpeakers(): boolean {
         return this.speakerAmount > 0;
+    }
+
+    public get showPreamble(): boolean {
+        return !this.state?.isFinalState ?? true;
     }
 
     /**
@@ -315,12 +320,8 @@ export class ViewMotion extends BaseViewModelWithAgendaItemAndListOfSpeakers<Mot
     }
 
     public getSlide(configService: ConfigService): ProjectorElementBuildDeskriptor {
-        const slideOptions = [];
-        if (
-            (this.changeRecommendations && this.changeRecommendations.length) ||
-            (this.amendments && this.amendments.length)
-        ) {
-            slideOptions.push({
+        const slideOptions: SlideOptions = [
+            {
                 key: 'mode',
                 displayName: _('Which version?'),
                 default: configService.instant('motions_recommendation_text_mode'),
@@ -330,8 +331,8 @@ export class ViewMotion extends BaseViewModelWithAgendaItemAndListOfSpeakers<Mot
                     { value: 'diff', displayName: 'Diff version' },
                     { value: 'agreed', displayName: 'Final version' }
                 ]
-            });
-        }
+            }
+        ];
 
         return {
             getBasicProjectorElement: options => ({

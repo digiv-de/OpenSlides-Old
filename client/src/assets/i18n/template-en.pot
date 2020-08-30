@@ -94,6 +94,9 @@ msgstr ""
 msgid "Add to queue"
 msgstr ""
 
+msgid "Add yourself to the current list of speakers to join the conference"
+msgstr ""
+
 msgid "Add/remove groups ..."
 msgstr ""
 
@@ -631,6 +634,9 @@ msgstr ""
 msgid "Comment fields"
 msgstr ""
 
+msgid "Comment {arg1} updated"
+msgstr ""
+
 msgid "Comments"
 msgstr ""
 
@@ -1032,6 +1038,9 @@ msgstr ""
 msgid "Exit"
 msgstr ""
 
+msgid "Exit conference"
+msgstr ""
+
 msgid "Exit live conference and continue livestream"
 msgstr ""
 
@@ -1159,6 +1168,9 @@ msgid "Groups with write permissions"
 msgstr ""
 
 msgid "Guest"
+msgstr ""
+
+msgid "Hang up"
 msgstr ""
 
 msgid "Has amendments"
@@ -1427,6 +1439,9 @@ msgstr ""
 msgid "Login"
 msgstr ""
 
+msgid "Login anyway"
+msgstr ""
+
 msgid "Login as guest"
 msgstr ""
 
@@ -1440,9 +1455,6 @@ msgid "Mark as personal favorite"
 msgstr ""
 
 msgid "Mark speaker"
-msgstr ""
-
-msgid "Maximize / minimize Jitsi window"
 msgstr ""
 
 msgid "Media file"
@@ -1470,6 +1482,9 @@ msgid "Motion"
 msgstr ""
 
 msgid "Motion block"
+msgstr ""
+
+msgid "Motion block set to"
 msgstr ""
 
 msgid "Motion blocks"
@@ -1827,7 +1842,7 @@ msgstr ""
 msgid "OpenSlides is temporarily reset to following timestamp"
 msgstr ""
 
-msgid "OpenSlides recommends:"
+msgid "OpenSlides recommends"
 msgstr ""
 
 msgid "Origin"
@@ -1960,6 +1975,15 @@ msgid "Please select the directory:"
 msgstr ""
 
 msgid "Please update your browser or contact your system administration."
+msgstr ""
+
+msgid "Poll created"
+msgstr ""
+
+msgid "Poll deleted"
+msgstr ""
+
+msgid "Poll updated"
 msgstr ""
 
 msgid "Preamble text for PDF document (all elections)"
@@ -2394,6 +2418,9 @@ msgstr ""
 msgid "Show title"
 msgstr ""
 
+msgid "Show/Hide video conference"
+msgstr ""
+
 msgid "Simple Workflow"
 msgstr ""
 
@@ -2422,9 +2449,6 @@ msgid "Sort comments"
 msgstr ""
 
 msgid "Sort election results by amount of votes"
-msgstr ""
-
-msgid "Sort list of speakers"
 msgstr ""
 
 msgid "Sort motions"
@@ -3058,6 +3082,12 @@ msgstr ""
 msgid "fullscreen"
 msgstr ""
 
+msgid "green"
+msgstr ""
+
+msgid "grey"
+msgstr ""
+
 msgid "has saved his work on this motion."
 msgstr ""
 
@@ -3086,6 +3116,9 @@ msgid "items per page"
 msgstr ""
 
 msgid "items selected"
+msgstr ""
+
+msgid "lightblue"
 msgstr ""
 
 msgid "majority"
@@ -3130,6 +3163,9 @@ msgstr ""
 msgid "open votes"
 msgstr ""
 
+msgid "or"
+msgstr ""
+
 msgid "outside"
 msgstr ""
 
@@ -3146,6 +3182,9 @@ msgid "public"
 msgstr ""
 
 msgid "published"
+msgstr ""
+
+msgid "red"
 msgstr ""
 
 msgid "refered to committee"
@@ -3197,4 +3236,7 @@ msgid "with filter"
 msgstr ""
 
 msgid "withdrawed"
+msgstr ""
+
+msgid "yellow"
 msgstr ""
