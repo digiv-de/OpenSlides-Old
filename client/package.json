@@ -1,6 +1,6 @@
 {
     "name": "OpenSlides3-Client",
-    "version": "3.1.1",
+    "version": "3.2.0",
     "repository": {
         "type": "git",
         "url": "git://github.com/OpenSlides/OpenSlides.git"
@@ -17,6 +17,7 @@
         "build-debug": "ng build",
         "test": "ng test",
         "test-silently": "npm run test -- --watch=false --no-progress --browsers=ChromeHeadlessNoSandbox",
+        "test-live": "npm run test -- --watch=true --browsers=ChromeHeadlessNoSandbox",
         "lint-check": "ng lint",
         "lint-write": "ng lint --fix",
         "e2e": "ng e2e",
@@ -50,7 +51,7 @@
         "@pebula/ngrid": "2.0.0-rc.1",
         "@pebula/ngrid-material": "2.0.0-rc.1",
         "@pebula/utils": "1.0.2",
-        "@tinymce/tinymce-angular": "^3.6.0",
+        "@tinymce/tinymce-angular": "^4.1.0",
         "@videojs/http-streaming": "^1.13.3",
         "acorn": "^7.1.0",
         "chart.js": "^2.9.2",
@@ -58,6 +59,7 @@
         "css-element-queries": "^1.2.3",
         "exceljs": "1.15.0",
         "file-saver": "^2.0.2",
+        "jszip": "^3.5.0",
         "lz4js": "^0.2.0",
         "material-icon-font": "git+https://github.com/petergng/materialIconFont.git",
         "moment": "^2.24.0",
@@ -71,7 +73,7 @@
         "pdfmake": "^0.1.63",
         "po2json": "^1.0.0-beta-2",
         "rxjs": "^6.5.4",
-        "tinymce": "5.2.2",
+        "tinymce": "5.4.1",
         "tslib": "^1.10.0",
         "video.js": "^7.7.6",
         "zone.js": "~0.10.2"

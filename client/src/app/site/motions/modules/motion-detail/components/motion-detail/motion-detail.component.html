@@ -66,7 +66,9 @@
                 <mat-icon>picture_as_pdf</mat-icon>
                 <span>{{ 'PDF' | translate }}</span>
             </button>
-            <mat-divider *osPerms="['core.can_manage_projector', 'agenda.can_manage', 'core.can_see_history']"></mat-divider>
+            <mat-divider
+                *osPerms="['core.can_manage_projector', 'agenda.can_manage', 'core.can_see_history']"
+            ></mat-divider>
             <!-- Project -->
             <os-projector-button
                 [object]="motion"
@@ -115,7 +117,7 @@
     </mat-menu>
 </os-head-bar>
 
-<div class="content-container" (touchstart)="swipe($event, 'start')" (touchend)="swipe($event, 'end')">
+<div class="content-container spacer-bottom-60" (touchstart)="swipe($event, 'start')" (touchend)="swipe($event, 'end')">
     <!-- Title -->
     <div class="title" *ngIf="motion && !editMotion">
         <div class="title-line">
@@ -536,7 +538,7 @@
                     mat-button
                     [matMenuTriggerFor]="changeRecoMenu"
                     *ngIf="
-                        motion && ((allChangingObjects && allChangingObjects.length) || motion.modified_final_version)
+                        motion && (hasChangingObjects() || motion.modified_final_version)
                     "
                 >
                     <mat-icon>rate_review</mat-icon>
@@ -627,7 +629,14 @@
                         [multiple]="true"
                         placeholder="{{ 'Submitters' | translate }}"
                         [inputListValues]="submitterObserver"
-                    ></os-search-value-selector>
+                        [showNotFoundButton]="true"
+                        (clickNotFound)="createNewSubmitter($event)"
+                    >
+                        <ng-container notFoundDescription>
+                            <mat-icon>add</mat-icon>
+                            {{ 'Create user' | translate }}
+                        </ng-container>
+                    </os-search-value-selector>
                 </mat-form-field>
             </ng-container>
         </div>
@@ -658,7 +667,7 @@
         </div>
 
         <!-- Text (hide preamble, if diff mode. The preample is included in the motion-detail-diff component) -->
-        <span *ngIf="!isRecoMode(ChangeRecoMode.Diff)" class="text-prefix-label">{{ preamble | translate }}</span>
+        <span *ngIf="showPreamble && !isRecoMode(ChangeRecoMode.Diff)" class="text-prefix-label">{{ preamble | translate }}</span>
 
         <!-- Regular motions or traditional amendments -->
         <ng-container *ngIf="!editMotion && !motion.isStatuteAmendment() && !motion.isParagraphBasedAmendment()">
@@ -843,7 +852,14 @@
                             [multiple]="true"
                             placeholder="{{ 'Supporters' | translate }}"
                             [inputListValues]="supporterObserver"
-                        ></os-search-value-selector>
+                            [showNotFoundButton]="true"
+                            (clickNotFound)="createNewSupporter($event)"
+                        >
+                            <ng-container notFoundDescription>
+                                <mat-icon>add</mat-icon>
+                                {{ 'Create user' | translate }}
+                            </ng-container>
+                        </os-search-value-selector>
                     </mat-form-field>
                 </div>
             </div>
@@ -878,9 +894,10 @@
         <!-- If the array exists, we do not have an error -->
         <div *ngIf="motion.diffLines">
             <div class="alert alert-info" *ngIf="motion.diffLines.length === 0">
-                <span>{{ 'No changes at the text.' | translate }}</span>
+                <i *ngIf="motion.parent">{{ 'No changes at the text.' | translate }}</i>
+                <i *ngIf="!motion.parent">{{ 'The parent motion was deleted' | translate }}</i>
             </div>
-            <ng-container *ngIf="!isRecoMode(ChangeRecoMode.Diff) && !isFinalEdit">
+            <ng-container *ngIf="motion.parent && !isRecoMode(ChangeRecoMode.Diff) && !isFinalEdit">
                 <div
                     *ngFor="let paragraph of getAmendmentParagraphs()"
                     class="motion-text motion-text-diff amendment-view"
@@ -992,7 +1009,7 @@
         mat-menu-item
         (click)="setChangeRecoMode(ChangeRecoMode.Changed)"
         [ngClass]="{ selected: crMode === ChangeRecoMode.Changed }"
-        *ngIf="allChangingObjects && allChangingObjects.length"
+        *ngIf="hasChangingObjects()"
     >
         {{ 'Changed version' | translate }}
     </button>
@@ -1000,7 +1017,7 @@
         mat-menu-item
         (click)="setChangeRecoMode(ChangeRecoMode.Diff)"
         [ngClass]="{ selected: crMode === ChangeRecoMode.Diff }"
-        *ngIf="allChangingObjects && allChangingObjects.length"
+        *ngIf="hasChangingObjects()"
     >
         {{ 'Diff version' | translate }}
     </button>
@@ -1008,7 +1025,7 @@
         mat-menu-item
         (click)="setChangeRecoMode(ChangeRecoMode.Final)"
         [ngClass]="{ selected: crMode === ChangeRecoMode.Final }"
-        *ngIf="motion && !motion.isParagraphBasedAmendment() && allChangingObjects && allChangingObjects.length"
+        *ngIf="motion && !motion.isParagraphBasedAmendment() && hasChangingObjects()"
     >
         {{ 'Final version' | translate }}
     </button>

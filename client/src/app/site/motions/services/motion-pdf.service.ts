@@ -132,8 +132,10 @@ export class MotionPdfService {
         }
 
         if (!contentToExport || contentToExport.includes('text')) {
-            const preamble = this.createPreamble(motion);
-            motionPdfContent.push(preamble);
+            if (motion.showPreamble) {
+                const preamble = this.createPreamble(motion);
+                motionPdfContent.push(preamble);
+            }
             const text = this.createText(motion, lineLength, lnMode, crMode);
             motionPdfContent.push(text);
         }
@@ -164,7 +166,7 @@ export class MotionPdfService {
     private createTitle(motion: ViewMotion, crMode: ChangeRecoMode, lineLength: number): object {
         // summary of change recommendations (for motion diff version only)
         const changes = this.getUnifiedChanges(motion, lineLength);
-        const titleChange = changes.find(change => change.isTitleChange());
+        const titleChange = changes.find(change => change?.isTitleChange());
         const changedTitle = this.changeRecoRepo.getTitleWithChanges(motion.title, titleChange, crMode);
 
         const identifier = motion.identifier ? ' ' + motion.identifier : '';
@@ -245,23 +247,25 @@ export class MotionPdfService {
         }
 
         // supporters
-        const minSupporters = this.configService.instant<number>('motions_min_supporters');
-        if (minSupporters && motion.supporters.length > 0) {
-            const supporters = motion.supporters
-                .map(supporter => {
-                    return supporter.full_name;
-                })
-                .join(', ');
+        if (!infoToExport || infoToExport.includes('supporters')) {
+            const minSupporters = this.configService.instant<number>('motions_min_supporters');
+            if (!!minSupporters && motion.supporters.length > 0) {
+                const supporters = motion.supporters
+                    .map(supporter => {
+                        return supporter.full_name;
+                    })
+                    .join(', ');
 
-            metaTableBody.push([
-                {
-                    text: `${this.translate.instant('Supporters')}:`,
-                    style: 'boldText'
-                },
-                {
-                    text: supporters
-                }
-            ]);
+                metaTableBody.push([
+                    {
+                        text: `${this.translate.instant('Supporters')}:`,
+                        style: 'boldText'
+                    },
+                    {
+                        text: supporters
+                    }
+                ]);
+            }
         }
 
         // state
@@ -630,16 +634,18 @@ export class MotionPdfService {
      * @returns
      */
     private getUnifiedChanges(motion: ViewMotion, lineLength: number): ViewUnifiedChange[] {
-        return this.changeRecoRepo
-            .getChangeRecoOfMotion(motion.id)
-            .concat(
-                this.motionRepo.getAmendmentsInstantly(motion.id).flatMap((amendment: ViewMotion) => {
-                    const changeRecos = this.changeRecoRepo
-                        .getChangeRecoOfMotion(amendment.id)
-                        .filter(reco => reco.showInFinalView());
-                    return this.motionRepo.getAmendmentAmendedParagraphs(amendment, lineLength, changeRecos);
-                })
-            )
+        const motionChangeRecos = this.changeRecoRepo.getChangeRecoOfMotion(motion.id);
+
+        const motionAmendments = this.motionRepo.getAmendmentsInstantly(motion.id).flatMap((amendment: ViewMotion) => {
+            const changeRecos = this.changeRecoRepo
+                .getChangeRecoOfMotion(amendment.id)
+                .filter(reco => reco.showInFinalView());
+            return this.motionRepo.getAmendmentAmendedParagraphs(amendment, lineLength, changeRecos);
+        });
+
+        return motionChangeRecos
+            .concat(motionAmendments)
+            .filter(change => !!change)
             .sort((a, b) => a.getLineFrom() - b.getLineFrom()) as ViewUnifiedChange[];
     }
 

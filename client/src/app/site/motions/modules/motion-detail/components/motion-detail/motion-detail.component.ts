@@ -29,7 +29,7 @@ import { MotionRepositoryService, ParagraphToChoose } from 'app/core/repositorie
 import { StatuteParagraphRepositoryService } from 'app/core/repositories/motions/statute-paragraph-repository.service';
 import { WorkflowRepositoryService } from 'app/core/repositories/motions/workflow-repository.service';
 import { TagRepositoryService } from 'app/core/repositories/tags/tag-repository.service';
-import { UserRepositoryService } from 'app/core/repositories/users/user-repository.service';
+import { NewUser, UserRepositoryService } from 'app/core/repositories/users/user-repository.service';
 import { ConfigService } from 'app/core/ui-services/config.service';
 import { DiffLinesInParagraph, LineRange } from 'app/core/ui-services/diff.service';
 import { LinenumberingService } from 'app/core/ui-services/linenumbering.service';
@@ -167,6 +167,10 @@ export class MotionDetailComponent extends BaseViewComponent implements OnInit, 
         );
     }
 
+    public get showPreamble(): boolean {
+        return this.motion.showPreamble;
+    }
+
     /**
      * Saves the target motion. Accessed via the getter and setter.
      */
@@ -225,15 +229,15 @@ export class MotionDetailComponent extends BaseViewComponent implements OnInit, 
     public amendmentChangeRecos: { [amendmentId: string]: ViewMotionChangeRecommendation[] } = {};
 
     /**
+     * All change recommendations AND amendments, sorted by line number.
+     */
+    private sortedChangingObjects: ViewUnifiedChange[] = null;
+
+    /**
      * The observables for the `amendmentChangeRecos` field above.
      * Necessary to track which amendments' change recommendations we have already subscribed to.
      */
     public amendmentChangeRecoSubscriptions: { [amendmentId: string]: Subscription } = {};
-
-    /**
-     * All change recommendations AND amendments, sorted by line number.
-     */
-    public allChangingObjects: ViewUnifiedChange[] = [];
 
     /**
      * preload the next motion for direct navigation
@@ -522,7 +526,7 @@ export class MotionDetailComponent extends BaseViewComponent implements OnInit, 
             .subscribe(enabled => (this.amendmentsEnabled = enabled));
         this.configService.get<number>('motions_line_length').subscribe(lineLength => {
             this.lineLength = lineLength;
-            this.recalcUnifiedChanges();
+            this.sortedChangingObjects = null;
         });
         this.configService
             .get<LineNumberingMode>('motions_default_line_numbering')
@@ -612,15 +616,37 @@ export class MotionDetailComponent extends BaseViewComponent implements OnInit, 
                     .getChangeRecosOfMotionObservable(amendment.id)
                     .subscribe((changeRecos: ViewMotionChangeRecommendation[]): void => {
                         this.amendmentChangeRecos[amendment.id] = changeRecos;
-                        this.recalcUnifiedChanges();
+                        this.sortedChangingObjects = null;
+                        this.cd.markForCheck();
                     });
             }
         });
     }
 
     /**
+     * Retrieves
+     */
+    public getAllChangingObjectsSorted(): ViewUnifiedChange[] {
+        if (this.sortedChangingObjects === null) {
+            this.recalcUnifiedChanges();
+        }
+        return this.sortedChangingObjects;
+    }
+
+    public hasChangingObjects(): boolean {
+        if (this.sortedChangingObjects !== null) {
+            return this.sortedChangingObjects.length > 0;
+        }
+
+        return (
+            (this.changeRecommendations && this.changeRecommendations.length > 0) ||
+            (this.amendments && this.amendments.filter(amendment => amendment.isParagraphBasedAmendment()).length > 0)
+        );
+    }
+
+    /**
      * Merges amendments and change recommendations and sorts them by the line numbers.
-     * Called each time one of these arrays changes.
+     * Called each time one of these arrays changes (if it is requested using getAllChangingObjectsSorted()).
      *
      * TODO: 1. Having logic outside of a service is bad practice
      *       2. Manipulating class parameters without an subscription should
@@ -634,10 +660,10 @@ export class MotionDetailComponent extends BaseViewComponent implements OnInit, 
             return;
         }
 
-        this.allChangingObjects = [];
+        this.sortedChangingObjects = [];
         if (this.changeRecommendations) {
             this.changeRecommendations.forEach((change: ViewMotionChangeRecommendation): void => {
-                this.allChangingObjects.push(change);
+                this.sortedChangingObjects.push(change);
             });
         }
         if (this.amendments) {
@@ -651,11 +677,11 @@ export class MotionDetailComponent extends BaseViewComponent implements OnInit, 
                     this.repo
                         .getAmendmentAmendedParagraphs(amendment, this.lineLength, toApplyChanges)
                         .forEach((change: ViewUnifiedChange): void => {
-                            this.allChangingObjects.push(change);
+                            this.sortedChangingObjects.push(change);
                         });
                 });
         }
-        this.allChangingObjects.sort((a: ViewUnifiedChange, b: ViewUnifiedChange) => {
+        this.sortedChangingObjects.sort((a: ViewUnifiedChange, b: ViewUnifiedChange) => {
             if (a.getLineFrom() < b.getLineFrom()) {
                 return -1;
             } else if (a.getLineFrom() > b.getLineFrom()) {
@@ -665,10 +691,10 @@ export class MotionDetailComponent extends BaseViewComponent implements OnInit, 
             }
         });
 
-        // When "diff" is the default view mode, the crMode might have been set
-        // before the motion and allChangingObjects have been loaded. As the availability of "diff" depends on
-        // allChangingObjects, we set "diff" first in this case (in the config-listener) and perform the actual
-        // check if "diff" is possible now.
+        // When "diff" is the default view mode, the crMode might have been set before the motion,
+        // amendments and change recommendations have been loaded.
+        // As the availability of "diff" depends on amendments and change recommendations, we set "diff"
+        // first in this case (in the config-listener) and perform the actual check if "diff" is possible now.
         // Test: "diff" as default view. Open a motion, create an amendment. "Original" should be set automatically.
         if (this.crMode) {
             this.crMode = this.determineCrMode(this.crMode);
@@ -709,7 +735,8 @@ export class MotionDetailComponent extends BaseViewComponent implements OnInit, 
                 this.repo.amendmentsTo(motionId).subscribe((amendments: ViewMotion[]): void => {
                     this.amendments = amendments;
                     this.resetAmendmentChangeRecoListener();
-                    this.recalcUnifiedChanges();
+                    this.sortedChangingObjects = null;
+                    this.cd.markForCheck();
                 }),
                 this.repo
                     .getRecommendationReferencingMotions(motionId)
@@ -718,7 +745,8 @@ export class MotionDetailComponent extends BaseViewComponent implements OnInit, 
                     .getChangeRecosOfMotionObservable(motionId)
                     .subscribe((recos: ViewMotionChangeRecommendation[]) => {
                         this.changeRecommendations = recos;
-                        this.recalcUnifiedChanges();
+                        this.sortedChangingObjects = null;
+                        this.cd.markForCheck();
                     })
             );
         } else {
@@ -728,8 +756,9 @@ export class MotionDetailComponent extends BaseViewComponent implements OnInit, 
             this.editMotion = true;
             const defaultMotion: Partial<CreateMotion> = {};
             if (this.route.snapshot.queryParams.parent) {
+                const parentId = +this.route.snapshot.queryParams.parent;
                 this.amendmentEdit = true;
-                const parentMotion = this.repo.getViewModel(this.route.snapshot.queryParams.parent);
+                const parentMotion = this.repo.getViewModel(parentId);
                 const defaultTitle = `${this.translate.instant('Amendment to')} ${parentMotion.identifierOrTitle}`;
                 defaultMotion.title = defaultTitle;
                 defaultMotion.parent_id = parentMotion.id;
@@ -942,8 +971,13 @@ export class MotionDetailComponent extends BaseViewComponent implements OnInit, 
      * @returns formated motion texts
      */
     public getFormattedTextPlain(): string {
-        // Prevent this.allChangingObjects to be reordered from within formatMotion
-        const changes: ViewUnifiedChange[] = Object.assign([], this.getAllTextChangingObjects());
+        // Prevent this.sortedChangingObjects to be reordered from within formatMotion
+        let changes: ViewUnifiedChange[];
+        if (this.crMode === ChangeRecoMode.Original) {
+            changes = [];
+        } else {
+            changes = Object.assign([], this.getAllTextChangingObjects());
+        }
         const formatedText = this.repo.formatMotion(
             this.motion.id,
             this.crMode,
@@ -1008,7 +1042,7 @@ export class MotionDetailComponent extends BaseViewComponent implements OnInit, 
     }
 
     public getChangesForDiffMode(): ViewUnifiedChange[] {
-        return this.allChangingObjects.filter(change => {
+        return this.getAllChangingObjectsSorted().filter(change => {
             if (this.showAllAmendments) {
                 return true;
             } else {
@@ -1018,17 +1052,21 @@ export class MotionDetailComponent extends BaseViewComponent implements OnInit, 
     }
 
     public getChangesForFinalMode(): ViewUnifiedChange[] {
-        return this.allChangingObjects.filter(change => {
+        return this.getAllChangingObjectsSorted().filter(change => {
             return change.showInFinalView();
         });
     }
 
     public getAllTextChangingObjects(): ViewUnifiedChange[] {
-        return this.allChangingObjects.filter((obj: ViewUnifiedChange) => !obj.isTitleChange());
+        return this.getAllChangingObjectsSorted().filter((obj: ViewUnifiedChange) => !obj.isTitleChange());
     }
 
     public getTitleChangingObject(): ViewUnifiedChange {
-        return this.allChangingObjects.find((obj: ViewUnifiedChange) => obj.isTitleChange());
+        if (this.changeRecommendations) {
+            return this.changeRecommendations.find(change => change.isTitleChange());
+        } else {
+            return null;
+        }
     }
 
     public getTitleWithChanges(): string {
@@ -1289,9 +1327,16 @@ export class MotionDetailComponent extends BaseViewComponent implements OnInit, 
      * Sets the default workflow ID during form creation
      */
     public updateWorkflowIdForCreateForm(paragraph?: number): void {
-        const isStatuteAmendment = !!this.contentForm.get('statute_amendment').value && !!paragraph;
-        const configKey = isStatuteAmendment ? 'motions_statute_amendments_workflow' : 'motions_workflow';
-        const workflowId = this.configService.instant<string>(configKey);
+        let configKey: string;
+
+        if (!!this.contentForm.get('statute_amendment').value && !!paragraph) {
+            configKey = 'motions_statute_amendments_workflow';
+        } else if (!!this.route.snapshot.queryParams.parent) {
+            configKey = 'motions_amendments_workflow';
+        } else {
+            configKey = 'motions_workflow';
+        }
+        const workflowId = this.configService.instant(configKey);
         this.contentForm.patchValue({ workflow_id: +workflowId });
     }
 
@@ -1537,10 +1582,10 @@ export class MotionDetailComponent extends BaseViewComponent implements OnInit, 
                 /**
                  * Because without change recos you cannot escape the final version anymore
                  */
-            } else if (!this.allChangingObjects?.length) {
+            } else if (!this.hasChangingObjects()) {
                 return ChangeRecoMode.Original;
             }
-        } else if (mode === ChangeRecoMode.Changed && !this.allChangingObjects?.length) {
+        } else if (mode === ChangeRecoMode.Changed && !this.hasChangingObjects()) {
             /**
              * Because without change recos you cannot escape the changed version view
              * You will not be able to automatically change to the Changed view after creating
@@ -1695,6 +1740,31 @@ export class MotionDetailComponent extends BaseViewComponent implements OnInit, 
         if (this.editMotion) {
             event.returnValue = null;
         }
+    }
+
+    public async createNewSubmitter(username: string): Promise<void> {
+        const newUserObj = await this.createNewUser(username);
+        this.addNewUserToFormCtrl(newUserObj, 'submitters_id');
+    }
+
+    public async createNewSupporter(username: string): Promise<void> {
+        const newUserObj = await this.createNewUser(username);
+        this.addNewUserToFormCtrl(newUserObj, 'supporters_id');
+    }
+
+    private addNewUserToFormCtrl(newUserObj: NewUser, controlName: string): void {
+        const control = this.contentForm.get(controlName);
+        let currentSubmitters: number[] = control.value;
+        if (currentSubmitters?.length) {
+            currentSubmitters.push(newUserObj.id);
+        } else {
+            currentSubmitters = [newUserObj.id];
+        }
+        control.setValue(currentSubmitters);
+    }
+
+    private createNewUser(username: string): Promise<NewUser> {
+        return this.userRepo.createFromString(username);
     }
 
     public swipe(e: TouchEvent, when: string): void {
