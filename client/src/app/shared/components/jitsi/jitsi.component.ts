@@ -138,6 +138,30 @@ export class JitsiComponent extends BaseViewComponent implements OnInit, OnDestr
 
     public canManageSpeaker: boolean;
 
+    /**
+     * Jitsi|URL|Perm||Show
+     * =====|===|====||====
+     *   0  | 0 |  0 || 0
+     *   0  | 0 |  1 || 0
+     *   0  | 1 |  0 || 0
+     *   0  | 1 |  1 || 1
+     *   1  | 0 |  0 || 1
+     *   1  | 0 |  1 || 1
+     *   1  | 1 |  0 || 0
+     *   1  | 1 |  1 || 1
+     */
+    public get showConferenceBar(): boolean {
+        if (this.enableJitsi) {
+            if (this.videoStreamUrl && !this.canSeeLiveStream) {
+                return false;
+            } else {
+                return true;
+            }
+        } else {
+            return this.videoStreamUrl && this.canSeeLiveStream;
+        }
+    }
+
     public get isAccessPermitted(): boolean {
         return !this.restricted || this.canManageSpeaker || this.isOnCurrentLos;
     }
@@ -315,6 +339,7 @@ export class JitsiComponent extends BaseViewComponent implements OnInit, OnDestr
         await this.configsLoaded;
 
         this.subscriptions.push(
+<<<<<<< HEAD
             this.storageMap
                 .watch(this.CONFERENCE_STATE_STORAGE_KEY)
                 .pipe(distinctUntilChanged())
@@ -327,14 +352,33 @@ export class JitsiComponent extends BaseViewComponent implements OnInit, OnDestr
                         } else {
                             this.currentState = confState;
                         }
+=======
+            this.storageMap.watch(this.CONFERENCE_STATE_STORAGE_KEY).subscribe((confState: ConferenceState) => {
+                if (confState in ConferenceState) {
+                    if (this.enableJitsi && (!this.videoStreamUrl || !this.canSeeLiveStream)) {
+                        this.currentState = ConferenceState.jitsi;
+                    } else if (!this.enableJitsi && this.videoStreamUrl && this.canSeeLiveStream) {
+                        this.currentState = ConferenceState.stream;
+>>>>>>> 5b63809b121386a7109b9e81671bfd58f114ebf1
                     } else {
                         this.setDefaultConfState();
                     }
+<<<<<<< HEAD
                     // show stream window when the state changes to stream
                     if (this.currentState === ConferenceState.stream && !this.streamActiveInAnotherTab) {
                         this.showJitsiWindow = true;
                     }
                 }),
+=======
+                } else {
+                    this.setDefaultConfState();
+                }
+                // show stream window when the state changes to stream
+                if (this.currentState === ConferenceState.stream && !this.streamActiveInAnotherTab) {
+                    this.showJitsiWindow = true;
+                }
+            }),
+>>>>>>> 5b63809b121386a7109b9e81671bfd58f114ebf1
             // check if the operator is on the clos, remove from room if not permitted
             this.closService.currentListOfSpeakersObservable
                 .pipe(

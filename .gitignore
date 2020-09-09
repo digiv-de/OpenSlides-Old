@@ -19,7 +19,8 @@
 Thumbs.db
 # Virtual Environment
 .virtualenv*/*
-.venv/*
+.venv
+server/.venv
 
 ## Compatibility
 # OS4-Submodules

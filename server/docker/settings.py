@@ -135,7 +135,11 @@ ENABLE_ELECTRONIC_VOTING = get_env("ENABLE_ELECTRONIC_VOTING", False, bool)
 # Jitsi integration
 JITSI_DOMAIN = get_env("JITSI_DOMAIN", None)
 JITSI_ROOM_NAME = get_env("JITSI_ROOM_NAME", None)
+<<<<<<< HEAD
 JITSI_PASSWORD = get_env("JITSI_PASSWORD", None)
+=======
+JITSI_ROOM_PASSWORD = get_env("JITSI_ROOM_PASSWORD", None)
+>>>>>>> 5b63809b121386a7109b9e81671bfd58f114ebf1
 
 TIME_ZONE = "Europe/Berlin"
 STATICFILES_DIRS = [os.path.join(OPENSLIDES_USER_DATA_DIR, "static")] + STATICFILES_DIRS
