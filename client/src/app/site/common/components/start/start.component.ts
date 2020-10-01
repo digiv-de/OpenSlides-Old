@@ -8,12 +8,12 @@ import { TranslateService } from '@ngx-translate/core'; // showcase
 import { OperatorService, Permission } from 'app/core/core-services/operator.service';
 import { ConfigRepositoryService } from 'app/core/repositories/config/config-repository.service';
 import { ConfigService } from 'app/core/ui-services/config.service';
-import { BaseViewComponent } from 'app/site/base/base-view';
-import { HttpService } from 'app/core/core-services/http.service';
-import { ProjectorMessageRepositoryService } from 'app/core/repositories/projector/projector-message-repository.service';
+import { BaseViewComponentDirective } from 'app/site/base/base-view';
 import { ProjectorMessage } from 'app/shared/models/core/projector-message';
+import { ProjectorMessageRepositoryService } from 'app/core/repositories/projector/projector-message-repository.service';
+import { HttpService } from 'app/core/core-services/http.service';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { interval } from 'rxjs';
+
 
 /**
  * Interface describes the keys for the fields at start-component.
@@ -31,7 +31,7 @@ interface IStartContent {
     templateUrl: './start.component.html',
     styleUrls: ['./start.component.scss']
 })
-export class StartComponent extends BaseViewComponent implements OnInit {
+export class StartComponent extends BaseViewComponentDirective implements OnInit {
     /**
      * Whether the user is editing the content.
      */
@@ -114,28 +114,40 @@ export class StartComponent extends BaseViewComponent implements OnInit {
                 .then(resp => {
                     this.stimmungApiData = resp;
                 });
-            if (this.subscription == null) {
-                this.counter = interval(4000);
-                this.subscription = this.counter.subscribe(() => {
+            if (this.counter == null) {
+                // this.counter = interval(4000);
+                this.counter = setInterval(async () => {
                     fetch(this.apiUrl)
                         .then(response => response.json())
                         .then(resp => {
                             this.stimmungApiData = resp;
                         });
-                });
+                }, 4000);
+
+                // this.subscription = this.counter.subscribe(() => {
+                //     fetch(this.apiUrl)
+                //         .then(response => response.json())
+                //         .then(resp => {
+                //             this.stimmungApiData = resp;
+                //         });
+                // });
             }
         } else {
-            if (this.subscription) {
-                this.subscription.unsubscribe();
-            }
-            window.clearInterval(this.counter);
+            // if (this.subscription) {
+            //     this.subscription.unsubscribe();
+            // }
+            clearInterval(this.counter);
+            this.counter = null;
+            // window.clearInterval(this.counter);
         }
     }
 
     public ngOnDestroy(): void {
         if (this.subscription) {
-            window.clearInterval(this.counter);
-            this.subscription.unsubscribe();
+            clearInterval(this.counter);
+            this.counter = null;
+            // window.clearInterval(this.counter);
+            // this.subscription.unsubscribe();
         }
     }
     /**

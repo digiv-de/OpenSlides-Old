@@ -2,7 +2,7 @@ import { Component, Inject, OnInit } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Title } from '@angular/platform-browser';
 import { TranslateService } from '@ngx-translate/core';
-import { BaseViewComponent } from 'app/site/base/base-view';
+import { BaseViewComponentDirective } from 'app/site/base/base-view';
 import { OperatorService } from 'app/core/core-services/operator.service';
 import { ProjectorMessageRepositoryService } from 'app/core/repositories/projector/projector-message-repository.service';
 import { HttpService } from 'app/core/core-services/http.service';
@@ -18,7 +18,7 @@ import { ConfigService } from 'app/core/ui-services/config.service';
     templateUrl: './stimmung-overlay.component.html',
     styleUrls: ['./stimmung-overlay.component.scss']
 })
-export class StimmungOverlayComponent extends BaseViewComponent implements OnInit {
+export class StimmungOverlayComponent extends BaseViewComponentDirective implements OnInit {
     /**
      * The form data
      */
