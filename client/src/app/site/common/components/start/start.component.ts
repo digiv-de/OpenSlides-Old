@@ -103,7 +103,7 @@ export class StartComponent extends BaseViewComponentDirective implements OnInit
         });
 
         this.configService.get<string>('general_stimmung_url').subscribe(val => {
-            this.apiUrl = val;
+            this.apiUrl = val ? val + '/datasource' : '';
         });
 
         // Api Aufrufen alle 4 sekunden

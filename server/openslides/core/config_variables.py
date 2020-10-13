@@ -51,6 +51,7 @@ def get_config_variables():
         name="general_stimmung_url",
         default_value="",
         label="URL Stimmungs-API",
+        help_text="Format: https://stmg.digiv.de (Pfade werden ergänzt)",
         weight=125,
         subgroup="Event",
     )

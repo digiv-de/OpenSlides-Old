@@ -205,7 +205,7 @@ export class ProjectorComponent extends BaseComponent implements OnDestroy {
         this.configService.get<string>('general_event_date').subscribe(val => (this.eventDate = val));
         this.configService.get<string>('general_event_location').subscribe(val => (this.eventLocation = val));
         this.configService.get<string>('general_stimmung_url').subscribe(val => {
-            this.apiUrl = val;
+            this.apiUrl = val ? val + '/datasource' : '';
         });
 
         // Api Aufrufen alle 4 sekunden

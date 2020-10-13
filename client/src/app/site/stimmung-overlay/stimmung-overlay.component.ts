@@ -62,7 +62,7 @@ export class StimmungOverlayComponent extends BaseViewComponentDirective impleme
     public ngOnInit(): void {
         this.configService.get<string>('general_stimmung_url').subscribe(val => {
             if(val != '') {
-                this.apiUrl = val.replace('datasource','raise');
+                this.apiUrl = val ? val + '/raise' : '';
             }
         });
         this.configService.get<string>('general_stimmung_token').subscribe(val => {
