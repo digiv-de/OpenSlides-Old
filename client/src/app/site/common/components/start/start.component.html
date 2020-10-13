@@ -36,8 +36,8 @@
         </form>
     </ng-container>
 </mat-card>
-<!-- anzeige der Stimmungskarten Werte-->
-<mat-card [ngClass]="'os-card'" style="overflow: auto;">
+
+<mat-card *ngIf="apiUrl" [ngClass]="'os-card'" style="overflow: auto;">
     <ng-container>
         <div class="app-content" style="margin-left: 10px; margin-right:10px;">
             <div class="title-slot">
