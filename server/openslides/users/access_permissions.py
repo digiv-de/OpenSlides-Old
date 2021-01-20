@@ -58,19 +58,32 @@ class UserAccessPermissions(BaseAccessPermissions):
         own_data_fields = set(little_data_fields)
         own_data_fields.add("email")
         own_data_fields.add("gender")
+        own_data_fields.add("vote_delegated_to_id")
+        own_data_fields.add("vote_delegated_from_users_id")
 
         # Check user permissions.
         if await async_has_perm(user_id, "users.can_see_name"):
+            whitelist_operator = None
             if await async_has_perm(user_id, "users.can_see_extra_data"):
                 if await async_has_perm(user_id, "users.can_manage"):
-                    data = [filtered_data(full, all_data_fields) for full in full_data]
+                    whitelist = all_data_fields
                 else:
-                    data = [filtered_data(full, many_data_fields) for full in full_data]
+                    whitelist = many_data_fields
             else:
-                data = [
-                    filtered_data(full, little_data_fields, own_data_fields)
-                    for full in full_data
-                ]
+                whitelist = little_data_fields
+                whitelist_operator = own_data_fields
+
+            # for managing {motion, assignment} polls the users needs to know
+            # the vote delegation structure.
+            if await async_has_perm(
+                user_id, "motion.can_manage_polls"
+            ) or await async_has_perm(user_id, "assignments.can_manage"):
+                whitelist.add("vote_delegated_to_id")
+                whitelist.add("vote_delegated_from_users_id")
+
+            data = [
+                filtered_data(full, whitelist, whitelist_operator) for full in full_data
+            ]
         else:
             # Build a list of users, that can be seen without any permissions (with little fields).
 
@@ -88,19 +101,26 @@ class UserAccessPermissions(BaseAccessPermissions):
                 ):
                     can_see_collection_strings.add(collection_string)
 
-            user_ids = await required_user.get_required_users(
+            required_user_ids = await required_user.get_required_users(
                 can_see_collection_strings
             )
 
             # Add oneself.
             if user_id:
-                user_ids.add(user_id)
+                required_user_ids.add(user_id)
+
+            # add vote delegations
+            # Find our model in full_data and get vote_delegated_from_users_id from it.
+            for user in full_data:
+                if user["id"] == user_id:
+                    required_user_ids.update(user["vote_delegated_from_users_id"])
+                    break
 
             # Parse data.
             data = [
                 filtered_data(full, little_data_fields, own_data_fields)
                 for full in full_data
-                if full["id"] in user_ids
+                if full["id"] in required_user_ids
             ]
 
         return data

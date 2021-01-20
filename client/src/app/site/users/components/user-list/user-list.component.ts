@@ -7,6 +7,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import { TranslateService } from '@ngx-translate/core';
 import { PblColumnDefinition } from '@pebula/ngrid';
+import { BehaviorSubject } from 'rxjs';
 
 import { OperatorService, Permission } from 'app/core/core-services/operator.service';
 import { StorageService } from 'app/core/core-services/storage.service';
@@ -55,6 +56,16 @@ interface InfoDialog {
      * Structure level for one user.
      */
     structure_level: string;
+
+    /**
+     * Transfer voting rights from
+     */
+    vote_delegated_from_users_id: number[];
+
+    /**
+     * Transfer voting rights to
+     */
+    vote_delegated_to_id: number;
 }
 
 /**
@@ -81,6 +92,8 @@ export class UserListComponent extends BaseListViewComponent<ViewUser> implement
      * All available groups, where the user can be in.
      */
     public groups: ViewGroup[];
+
+    public readonly users: BehaviorSubject<ViewUser[]> = new BehaviorSubject<ViewUser[]>([]);
 
     /**
      * The list of all genders.
@@ -110,8 +123,17 @@ export class UserListComponent extends BaseListViewComponent<ViewUser> implement
         return this.operator.hasPerms(Permission.usersCanManage);
     }
 
+    public get canSeeExtra(): boolean {
+        return this.operator.hasPerms(Permission.usersCanSeeExtraData);
+    }
+
     public get showVoteWeight(): boolean {
         return this.pollService.isElectronicVotingEnabled && this.isVoteWeightActive;
+    }
+
+    public get totalVoteWeight(): number {
+        const votes = this.dataSource?.filteredData?.reduce((previous, current) => previous + current.vote_weight, 0);
+        return votes ?? 0;
     }
 
     /**
@@ -139,7 +161,7 @@ export class UserListComponent extends BaseListViewComponent<ViewUser> implement
     /**
      * Define extra filter properties
      */
-    public filterProps = ['full_name', 'groups', 'structure_level', 'number'];
+    public filterProps = ['full_name', 'groups', 'structure_level', 'number', 'delegationName'];
 
     private selfPresentConfStr = 'users_allow_self_set_present';
 
@@ -187,6 +209,7 @@ export class UserListComponent extends BaseListViewComponent<ViewUser> implement
 
         // enable multiSelect for this listView
         this.canMultiSelect = true;
+        this.users = this.repo.getViewModelListBehaviorSubject();
         config.get<boolean>('users_enable_presence_view').subscribe(state => (this._presenceViewConfigured = state));
         config.get<boolean>('users_activate_vote_weight').subscribe(active => (this.isVoteWeightActive = active));
         config.get<boolean>(this.selfPresentConfStr).subscribe(allowed => (this.allowSelfSetPresent = allowed));
@@ -203,9 +226,12 @@ export class UserListComponent extends BaseListViewComponent<ViewUser> implement
 
         // Initialize the groups
         this.groups = this.groupRepo.getViewModelList().filter(group => group.id !== 1);
-        this.groupRepo
-            .getViewModelListObservable()
-            .subscribe(groups => (this.groups = groups.filter(group => group.id !== 1)));
+
+        this.subscriptions.push(
+            this.groupRepo
+                .getViewModelListObservable()
+                .subscribe(groups => (this.groups = groups.filter(group => group.id !== 1)))
+        );
     }
 
     /**
@@ -242,7 +268,9 @@ export class UserListComponent extends BaseListViewComponent<ViewUser> implement
             groups_id: user.groups_id,
             gender: user.gender,
             structure_level: user.structure_level,
-            number: user.number
+            number: user.number,
+            vote_delegated_from_users_id: user.vote_delegated_from_users_id,
+            vote_delegated_to_id: user.vote_delegated_to_id
         };
 
         const dialogRef = this.dialog.open(this.userInfoDialog, infoDialogSettings);
@@ -255,7 +283,7 @@ export class UserListComponent extends BaseListViewComponent<ViewUser> implement
 
         dialogRef.afterClosed().subscribe(result => {
             if (result) {
-                this.repo.update(result, user);
+                this.repo.update(result, user).catch(this.raiseError);
             }
         });
     }
@@ -280,7 +308,9 @@ export class UserListComponent extends BaseListViewComponent<ViewUser> implement
                 { property: 'is_committee', label: 'Is a committee' },
                 { property: 'default_password', label: 'Initial password' },
                 { property: 'email' },
-                { property: 'gender' }
+                { property: 'username' },
+                { property: 'gender' },
+                { property: 'vote_weight', label: 'Vote weight' }
             ],
             this.translate.instant('Participants') + '.csv'
         );

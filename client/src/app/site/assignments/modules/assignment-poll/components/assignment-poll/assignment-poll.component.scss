@@ -18,8 +18,15 @@
     .poll-detail-button-wrapper {
         display: flex;
         margin: auto 0;
-        > a {
-            margin-left: auto;
+    }
+
+    .type-and-state {
+        display: flex;
+        span {
+            display: flex;
+        }
+        .poll-type {
+            width: fit-content;
         }
     }
 }

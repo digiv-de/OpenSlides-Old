@@ -221,7 +221,7 @@ export class AssignmentPdfService {
     private getPollResult(votingResult: PollTableData, poll: ViewAssignmentPoll): string {
         const resultList = votingResult.value
             .filter((singleResult: VotingResult) => {
-                if (poll.pollmethod === AssignmentPollMethod.Votes) {
+                if (poll.pollmethod === AssignmentPollMethod.Y) {
                     return singleResult.vote !== 'no' && singleResult.vote !== 'abstain';
                 } else if (poll.pollmethod === AssignmentPollMethod.YN) {
                     return singleResult.vote !== 'abstain';
@@ -232,7 +232,7 @@ export class AssignmentPdfService {
             .map((singleResult: VotingResult) => {
                 const votingKey = this.translate.instant(this.pollKeyVerbose.transform(singleResult.vote));
                 const resultValue = this.parsePollNumber.transform(singleResult.amount);
-                const resultInPercent = this.pollPercentBase.transform(singleResult.amount, poll);
+                const resultInPercent = this.pollPercentBase.transform(singleResult.amount, poll, 'assignment');
                 return `${votingKey}${!!votingKey ? ': ' : ''}${resultValue} ${
                     singleResult.showPercent && resultInPercent ? resultInPercent : ''
                 }`;

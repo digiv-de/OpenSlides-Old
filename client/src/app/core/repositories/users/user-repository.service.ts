@@ -43,6 +43,18 @@ const UserRelations: RelationDefinition[] = [
         ownIdKey: 'groups_id',
         ownKey: 'groups',
         foreignViewModel: ViewGroup
+    },
+    {
+        type: 'M2O',
+        ownIdKey: 'vote_delegated_to_id',
+        ownKey: 'voteDelegatedTo',
+        foreignViewModel: ViewUser
+    },
+    {
+        type: 'M2M',
+        ownIdKey: 'vote_delegated_from_users_id',
+        ownKey: 'voteDelegationsFrom',
+        foreignViewModel: ViewUser
     }
 ];
 
@@ -89,9 +101,9 @@ export class UserRepositoryService extends BaseRepository<ViewUser, User, UserTi
             this.sortProperty = conf;
             this.setConfigSortFn();
         });
-        this.constantsService.get<any>('Settings').subscribe(settings => {
+        this.constantsService.get<{ DEMO_USERS?: number[] }>('Settings').subscribe(settings => {
             if (settings) {
-                this.demoModeUserIds = settings.DEMO || null;
+                this.demoModeUserIds = settings.DEMO_USERS || null;
             }
         });
     }
@@ -255,6 +267,8 @@ export class UserRepositoryService extends BaseRepository<ViewUser, User, UserTi
 
     public async update(update: Partial<User>, viewModel: ViewUser): Promise<void> {
         this.preventAlterationOnDemoUsers(viewModel);
+        console.log('update: ', update);
+
         return super.update(update, viewModel);
     }
 

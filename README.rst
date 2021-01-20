@@ -18,7 +18,7 @@ setup or are interested in developing, please refer to `development
 instructions
 <https://github.com/OpenSlides/OpenSlides/blob/master/DEVELOPMENT.rst>`_.
 
-Note: This is temporary and will be replace with nice scripts...
+Note: This is temporary and will be replaced with nice scripts...
 
 First, you have to clone this repository::
 
@@ -39,8 +39,8 @@ We also strongly recommend that you set a secure admin password but it is not
 strictly required.  If you do not set an admin password, the default login
 credentials will be displayed on the login page.  Setting the admin password::
 
-    $ cp secrets/admin.env.example secrets/admin.env
-    $ vi secrets/admin.env
+    $ cp secrets/adminsecret.env.example secrets/adminsecret.env
+    $ vi secrets/adminsecret.env
 
 Afterwards, generate the configuration file::
 
@@ -54,6 +54,17 @@ Finally, you can start the instance using ``docker-compose``::
     $ docker-compose logs
     $ # ...
     $ docker-compose down
+
+More settings
+-------------
+
+When generating the ``docker-compose.yml``, more settings can be adjusted in the
+``docker/.env`` file. All changes for the backend are passed into djangos ``settings.py``.
+You can find more information about most settings `here
+<https://github.com/OpenSlides/OpenSlides/blob/master/server/SETTINGS.rst>`_. To generate
+the ``docker-compose.yml`` use this command::
+
+    $ ( set -a; source .env; m4 docker-stack.yml.m4 ) > docker-stack.yml
 
 
 Docker Swarm Mode

@@ -19,6 +19,9 @@ msgstr ""
 msgid "<unknown motion>"
 msgstr ""
 
+msgid "A file with this title or filename already exists in this directory."
+msgstr ""
+
 msgid "A name is required"
 msgstr ""
 
@@ -212,6 +215,9 @@ msgstr ""
 msgid "Anonymize votes"
 msgstr ""
 
+msgid "Anonymizing can only be done after finishing a poll."
+msgstr ""
+
 msgid "Anonymous"
 msgstr ""
 
@@ -281,9 +287,6 @@ msgstr ""
 msgid "Are you sure you want to delete this projector?"
 msgstr ""
 
-msgid "Are you sure you want to delete this speaker from this list of speakers?"
-msgstr ""
-
 msgid "Are you sure you want to delete this statute paragraph?"
 msgstr ""
 
@@ -324,6 +327,12 @@ msgstr ""
 msgid "Are you sure you want to remove this motion from motion block?"
 msgstr ""
 
+msgid "Are you sure you want to remove this speaker from the list of speakers?"
+msgstr ""
+
+msgid "Are you sure you want to remove yourself from this list of speakers?"
+msgstr ""
+
 msgid "Are you sure you want to renumber all motions of this category?"
 msgstr ""
 
@@ -349,6 +358,9 @@ msgstr ""
 msgid "Are you sure you want to send emails to all selected participants?"
 msgstr ""
 
+msgid "Are you sure you want to submit a point of order?"
+msgstr ""
+
 msgid "As of"
 msgstr ""
 
@@ -362,6 +374,12 @@ msgid "Ask, default yes"
 msgstr ""
 
 msgid "Attachments"
+msgstr ""
+
+msgid "Automatically open the microphone for new conference speakers"
+msgstr ""
+
+msgid "Automatically open the web cam for new conference speakers"
 msgstr ""
 
 msgid "Autopilot"
@@ -503,6 +521,9 @@ msgid "Can see motions in internal state"
 msgstr ""
 
 msgid "Can see names of users"
+msgstr ""
+
+msgid "Can see the autopilot"
 msgstr ""
 
 msgid "Can see the front page"
@@ -733,6 +754,9 @@ msgstr ""
 msgid "Current list of speakers"
 msgstr ""
 
+msgid "Currently no livestream available."
+msgstr ""
+
 msgid "Currently projected"
 msgstr ""
 
@@ -807,6 +831,9 @@ msgstr ""
 msgid "Delegates"
 msgstr ""
 
+msgid "Delegation of vote"
+msgstr ""
+
 msgid "Delete"
 msgstr ""
 
@@ -823,6 +850,9 @@ msgid "Delete recommendation"
 msgstr ""
 
 msgid "Delete whole history"
+msgstr ""
+
+msgid "Deleted user"
 msgstr ""
 
 msgid "Deletion"
@@ -967,6 +997,9 @@ msgstr ""
 msgid "Elections"
 msgstr ""
 
+msgid "Electronic voting is disabled. Only analog polls are allowed"
+msgstr ""
+
 msgid "Element"
 msgstr ""
 
@@ -989,6 +1022,9 @@ msgid "Enable numbering for agenda items"
 msgstr ""
 
 msgid "Enable participant presence view"
+msgstr ""
+
+msgid "Enable points of order"
 msgstr ""
 
 msgid "Enable/disable account ..."
@@ -1161,10 +1197,13 @@ msgstr ""
 msgid "General"
 msgstr ""
 
-msgid "General Abstain"
+msgid "General abstain"
 msgstr ""
 
-msgid "General No"
+msgid "General approval"
+msgstr ""
+
+msgid "General rejection"
 msgstr ""
 
 msgid "Generate new passwords"
@@ -1451,6 +1490,9 @@ msgstr ""
 msgid "Live conference"
 msgstr ""
 
+msgid "Live conference has to be active. Choose 0 to disable auto connect."
+msgstr ""
+
 msgid "Livestream"
 msgstr ""
 
@@ -1482,6 +1524,9 @@ msgid "Mark as personal favorite"
 msgstr ""
 
 msgid "Mark speaker"
+msgstr ""
+
+msgid "Media access is denied"
 msgstr ""
 
 msgid "Media file"
@@ -1691,6 +1736,9 @@ msgstr ""
 msgid "No decision"
 msgstr ""
 
+msgid "No delegation of vote"
+msgstr ""
+
 msgid "No email sent"
 msgstr ""
 
@@ -1710,6 +1758,12 @@ msgid "No items selected"
 msgstr ""
 
 msgid "No motion block set"
+msgstr ""
+
+msgid "No motions were numbered"
+msgstr ""
+
+msgid "No per candidate"
 msgstr ""
 
 msgid "No personal note"
@@ -1739,7 +1793,7 @@ msgstr ""
 msgid "None"
 msgstr ""
 
-msgid "Not suitable for formal secret voting!"
+msgid "Not allowed in demo mode"
 msgstr ""
 
 msgid "Note, that the default password will be changed to the new generated one."
@@ -1784,6 +1838,9 @@ msgid "Number of last speakers to be shown on the projector"
 msgstr ""
 
 msgid "Number of minimal digits for identifier"
+msgstr ""
+
+msgid "Number of next speakers automatically connecting to the live conference"
 msgstr ""
 
 msgid "Number of persons to be elected"
@@ -1870,6 +1927,9 @@ msgid "OpenSlides is temporarily reset to following timestamp"
 msgstr ""
 
 msgid "OpenSlides recommends"
+msgstr ""
+
+msgid "Options"
 msgstr ""
 
 msgid "Origin"
@@ -1983,6 +2043,9 @@ msgstr ""
 msgid "Phase"
 msgstr ""
 
+msgid "Please allow OpenSlides to access your microphone and/or camera"
+msgstr ""
+
 msgid "Please enter a name for the new directory:"
 msgstr ""
 
@@ -1998,10 +2061,16 @@ msgstr ""
 msgid "Please enter your new password"
 msgstr ""
 
+msgid "Please login via your identity provider"
+msgstr ""
+
 msgid "Please select the directory:"
 msgstr ""
 
 msgid "Please update your browser or contact your system administration."
+msgstr ""
+
+msgid "Point of order"
 msgstr ""
 
 msgid "Poll created"
@@ -2455,7 +2524,7 @@ msgid "Show/Hide video conference"
 msgstr ""
 
 msgid ""
-"Shows if livestream is not started. Recommended image format: 500x281px, "
+"Shows if livestream is not started. Recommended image format: 500x200px, "
 "PNG or JPG"
 msgstr ""
 
@@ -2624,6 +2693,9 @@ msgstr ""
 msgid "The assembly may decide:"
 msgstr ""
 
+msgid "The directory does not exist"
+msgstr ""
+
 msgid "The event manager has not set up a legal notice yet."
 msgstr ""
 
@@ -2648,10 +2720,10 @@ msgstr ""
 msgid "The list of speakers is closed."
 msgstr ""
 
-msgid "The live conference is already running in your OpenSlides session."
+msgid "The list of speakers is open."
 msgstr ""
 
-msgid "The livestream is already running in your OpenSlides session."
+msgid "The live conference is already running in your OpenSlides session."
 msgstr ""
 
 msgid "The livestream is disabled because you are inside a conference"
@@ -2660,6 +2732,9 @@ msgstr ""
 msgid ""
 "The maximum number of characters per line. Relevant when line numbering is "
 "enabled. Min: 40"
+msgstr ""
+
+msgid "The name contains invalid characters: \"/\""
 msgstr ""
 
 msgid "The number has to be greater than 0."
@@ -2706,6 +2781,9 @@ msgid "There are no items left to chose from"
 msgstr ""
 
 msgid "There is an error with this amendment. Please edit it manually."
+msgstr ""
+
+msgid "This ballot contains deleted users."
 msgstr ""
 
 msgid "This change collides with another one."
@@ -2818,9 +2896,6 @@ msgstr ""
 msgid "Unique speakers"
 msgstr ""
 
-msgid "Unknown user"
-msgstr ""
-
 msgid "Unsupport"
 msgstr ""
 
@@ -2903,6 +2978,15 @@ msgstr ""
 msgid "Voting result"
 msgstr ""
 
+msgid "Voting right delegated to (proxy)"
+msgstr ""
+
+msgid "Voting right for"
+msgstr ""
+
+msgid "Voting right received from (principals)"
+msgstr ""
+
 msgid "Voting successful."
 msgstr ""
 
@@ -2952,6 +3036,9 @@ msgstr ""
 msgid "Withdraw"
 msgstr ""
 
+msgid "Withdraw point of order"
+msgstr ""
+
 msgid "Workflow"
 msgstr ""
 
@@ -2985,13 +3072,34 @@ msgstr ""
 msgid "Yes/No/Abstain per candidate"
 msgstr ""
 
+msgid "You are not authenticated."
+msgstr ""
+
 msgid "You are not supposed to be here..."
 msgstr ""
 
 msgid "You are using the history mode of OpenSlides. Changes will not be saved."
 msgstr ""
 
+msgid "You can just anonymize named polls"
+msgstr ""
+
+msgid "You can not deactivate yourself."
+msgstr ""
+
+msgid "You can not delete yourself."
+msgstr ""
+
+msgid "You can not vote because this is an analog voting."
+msgstr ""
+
+msgid "You can not vote right now because the voting has not yet started."
+msgstr ""
+
 msgid "You can use {event_name} and {username} as placeholder."
+msgstr ""
+
+msgid "You can't delete the last projector."
 msgstr ""
 
 msgid "You cannot change the recommendation of motions in different workflows!"
@@ -3000,10 +3108,39 @@ msgstr ""
 msgid "You cannot change the state of motions in different workflows!"
 msgstr ""
 
+msgid ""
+"You cannot delegate a delegation of vote to another user (cascading not "
+"allowed)."
+msgstr ""
+
+msgid "You cannot delegate a vote to a user who has already delegated his vote."
+msgstr ""
+
+msgid "You cannot delegate a vote to yourself."
+msgstr ""
+
+msgid "You cannot delete the first state of the workflow."
+msgstr ""
+
+msgid "You cannot delete the last workflow."
+msgstr ""
+
+msgid "You cannot vote since your vote right is delegated."
+msgstr ""
+
+msgid "You do not have the permission to vote."
+msgstr ""
+
 msgid "You do not have the required permission to see that page!"
 msgstr ""
 
 msgid "You have already voted."
+msgstr ""
+
+msgid "You have to be logged in to be able to vote."
+msgstr ""
+
+msgid "You have to be present to vote."
 msgstr ""
 
 msgid "You have to fill this field."
@@ -3027,10 +3164,16 @@ msgstr ""
 msgid "Your decision cannot be changed afterwards."
 msgstr ""
 
+msgid "Your device has no microphone"
+msgstr ""
+
 msgid "Your input does not match the following structure: \"hh:mm\""
 msgstr ""
 
 msgid "Your password was resetted successfully!"
+msgstr ""
+
+msgid "Your voting right was delegated to another person."
 msgstr ""
 
 msgid "Zoom in"
@@ -3244,6 +3387,9 @@ msgid "rejected (not authorized)"
 msgstr ""
 
 msgid "remove group(s)"
+msgstr ""
+
+msgid "represented by"
 msgstr ""
 
 msgid "result"

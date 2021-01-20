@@ -458,7 +458,8 @@ export class ListViewTableComponent<V extends BaseViewModel | BaseViewModelWithC
     }
 
     public isElementProjected = (context: PblNgridRowContext<V>) => {
-        if (this.allowProjector && this.projectorService.isProjected(this.getProjectable(context.$implicit as V))) {
+        const model = context.$implicit as V;
+        if (this.allowProjector && this.projectorService.isProjected(this.getProjectable(model))) {
             return 'projected';
         }
     };
@@ -649,6 +650,8 @@ export class ListViewTableComponent<V extends BaseViewModel | BaseViewModelWithC
     private changeRowHeight(): void {
         if (this.vScrollFixed > 0) {
             document.documentElement.style.setProperty('--pbl-height', this.vScrollFixed + 'px');
+        } else {
+            document.documentElement.style.removeProperty('--pbl-height');
         }
     }
 

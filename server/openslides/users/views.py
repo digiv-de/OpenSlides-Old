@@ -36,6 +36,7 @@ from ..utils.auth import (
 from ..utils.autoupdate import AutoupdateElement, inform_changed_data, inform_elements
 from ..utils.cache import element_cache
 from ..utils.rest_api import (
+    APIException,
     ModelViewSet,
     Response,
     SimpleMetadata,
@@ -56,7 +57,7 @@ from .serializers import GroupSerializer, PermissionRelatedField
 from .user_backend import user_backend_manager
 
 
-demo_mode_users = getattr(settings, "DEMO", None)
+demo_mode_users = getattr(settings, "DEMO_USERS", None)
 is_demo_mode = isinstance(demo_mode_users, list) and len(demo_mode_users) > 0
 logger = logging.getLogger(__name__)
 if is_demo_mode:
@@ -174,8 +175,76 @@ class UserViewSet(ModelViewSet):
         ):
             request.data["username"] = user.username
 
+        # check that no chains are created with vote delegation
+        delegate_id = request.data.get("vote_delegated_to_id")
+        if delegate_id:
+            try:
+                delegate = User.objects.get(id=delegate_id)
+            except User.DoesNotExist:
+                raise ValidationError(
+                    {
+                        "detail": f"Vote delegation: The user with id {delegate_id} does not exist"
+                    }
+                )
+
+            self.assert_no_self_delegation(user, [delegate_id])
+            self.assert_vote_not_delegated(delegate)
+            self.assert_has_no_delegated_votes(user)
+
+            inform_changed_data(delegate)
+            if user.vote_delegated_to:
+                inform_changed_data(user.vote_delegated_to)
+
+        # handle delegated_from field seperately since its a SerializerMethodField
+        new_delegation_ids = request.data.get("vote_delegated_from_users_id")
+        if "vote_delegated_from_users_id" in request.data:
+            del request.data["vote_delegated_from_users_id"]
+
         response = super().update(request, *args, **kwargs)
+
+        # after rest of the request succeeded, handle delegation changes
+        if new_delegation_ids:
+            self.assert_no_self_delegation(user, new_delegation_ids)
+            self.assert_vote_not_delegated(user)
+
+            for id in new_delegation_ids:
+                delegation_user = User.objects.get(id=id)
+                self.assert_has_no_delegated_votes(delegation_user)
+                delegation_user.vote_delegated_to = user
+                delegation_user.save()
+
+        delegations_to_remove = user.vote_delegated_from_users.exclude(
+            id__in=(new_delegation_ids or [])
+        )
+        for old_delegation_user in delegations_to_remove:
+            old_delegation_user.vote_delegated_to = None
+            old_delegation_user.save()
+
+        # if only delegated_from was changed, we need an autoupdate for the operator
+        if new_delegation_ids or delegations_to_remove:
+            inform_changed_data(user)
+
         return response
+
+    def assert_vote_not_delegated(self, user):
+        if user.vote_delegated_to:
+            raise ValidationError(
+                {
+                    "detail": "You cannot delegate a vote to a user who has already delegated his vote."
+                }
+            )
+
+    def assert_has_no_delegated_votes(self, user):
+        if user.vote_delegated_from_users and len(user.vote_delegated_from_users.all()):
+            raise ValidationError(
+                {
+                    "detail": "You cannot delegate a delegation of vote to another user (cascading not allowed)."
+                }
+            )
+
+    def assert_no_self_delegation(self, user, delegate_ids):
+        if user.id in delegate_ids:
+            raise ValidationError({"detail": "You cannot delegate a vote to yourself."})
 
     def destroy(self, request, *args, **kwargs):
         """
@@ -281,6 +350,8 @@ class UserViewSet(ModelViewSet):
           field: 'is_active' | 'is_present' | 'is_committee'
           value: True|False
         }
+
+        Is_active and is_committee will not be settable for non-default auth type users.
         """
         ids = request.data.get("user_ids")
         self.assert_list_of_ints(ids)
@@ -293,9 +364,12 @@ class UserViewSet(ModelViewSet):
         if not isinstance(value, bool):
             raise ValidationError({"detail": "value must be true or false"})
 
-        users = User.objects.filter(auth_type="default").filter(pk__in=ids)
+        users = User.objects.filter(pk__in=ids)
+        if field != "is_present":
+            users = users.filter(auth_type="default")
         if field == "is_active":
             users = users.exclude(pk=request.user.id)
+
         for user in users:
             setattr(user, field, value)
             user.save()
@@ -391,6 +465,7 @@ class UserViewSet(ModelViewSet):
             data = serializer.prepare_password(serializer.data)
             groups = data["groups_id"]
             del data["groups_id"]
+            del data["vote_delegated_from_users_id"]
 
             db_user = User(**data)
             try:
@@ -446,7 +521,11 @@ class UserViewSet(ModelViewSet):
                 }
             )
         except smtplib.SMTPException as err:
-            raise ValidationError({"detail": f"{err.errno}: {err.strerror}"})
+            if err.errno and err.strerror:
+                detail = f"{err.errno}: {err.strerror}"
+            else:
+                detail = str(err)
+            raise ValidationError({"detail": detail})
 
         success_users = []
         user_pks_without_email = []
@@ -584,6 +663,7 @@ class GroupViewSet(ModelViewSet):
 
         # Delete the group
         self.perform_destroy(instance)
+        config.remove_group_id_from_all_group_configs(instance.id)
 
         # Get the updated user data from the DB.
         affected_users = User.objects.filter(pk__in=affected_users_ids)
@@ -778,6 +858,9 @@ class WhoAmIDataView(APIView):
             user_full_data = async_to_sync(element_cache.get_element_data)(
                 self.request.user.get_collection_string(), user_id
             )
+            if user_full_data is None:
+                raise APIException(f"Could not find user {user_id}", 500)
+
             auth_type = user_full_data["auth_type"]
             user_data = async_to_sync(element_cache.restrict_element_data)(
                 user_full_data, self.request.user.get_collection_string(), user_id

@@ -6,6 +6,7 @@ from django.contrib.auth import get_user_model
 from django.db import transaction
 from django.db.models import Case, When
 from django.db.models.deletion import ProtectedError
+from django.db.utils import IntegrityError
 from django.http.request import QueryDict
 from rest_framework import status
 
@@ -514,7 +515,10 @@ class MotionViewSet(TreeSortMixin, ModelViewSet):
                 and not motion.is_supporter(request.user)
             ):
                 raise ValidationError({"detail": "You can not support this motion."})
-            motion.supporters.add(request.user)
+            try:
+                motion.supporters.add(request.user)
+            except IntegrityError:
+                raise ValidationError({"detail": "You are already a supporter."})
             # Send new supporter via autoupdate because users without permission
             # to see users may not have it but can get it now.
             # TODO: Skip history.
@@ -1190,7 +1194,7 @@ class MotionPollViewSet(BasePollViewSet):
 
         return result
 
-    def handle_analog_vote(self, data, poll, user):
+    def handle_analog_vote(self, data, poll):
         option = poll.options.get()
         vote, _ = MotionVote.objects.get_or_create(option=option, value="Y")
         vote.weight = data["Y"]
@@ -1209,7 +1213,7 @@ class MotionPollViewSet(BasePollViewSet):
 
         poll.save()
 
-    def validate_vote_data(self, data, poll, user):
+    def validate_vote_data(self, data, poll):
         """
         Request data for analog:
         { "Y": <amount>, "N": <amount>, ["A": <amount>],
@@ -1240,15 +1244,25 @@ class MotionPollViewSet(BasePollViewSet):
         VotedModel = MotionPoll.voted.through
         VotedModel.objects.create(motionpoll=poll, user=user)
 
-    def handle_named_vote(self, data, poll, user):
-        self.handle_named_and_pseudoanonymous_vote(data, user, user, poll)
+    def handle_named_vote(self, data, poll, vote_user, request_user):
+        self.handle_named_and_pseudoanonymous_vote(
+            data,
+            poll,
+            weight_user=vote_user,
+            vote_user=vote_user,
+            request_user=request_user,
+        )
 
     def handle_pseudoanonymous_vote(self, data, poll, user):
-        self.handle_named_and_pseudoanonymous_vote(data, user, None, poll)
+        self.handle_named_and_pseudoanonymous_vote(data, poll, user, None, None)
 
-    def handle_named_and_pseudoanonymous_vote(self, data, weight_user, vote_user, poll):
+    def handle_named_and_pseudoanonymous_vote(
+        self, data, poll, weight_user, vote_user, request_user
+    ):
         option = poll.options.get()
-        vote = MotionVote.objects.create(user=vote_user, option=option)
+        vote = MotionVote.objects.create(
+            user=vote_user, delegated_user=request_user, option=option
+        )
         vote.value = data
         vote.weight = (
             weight_user.vote_weight

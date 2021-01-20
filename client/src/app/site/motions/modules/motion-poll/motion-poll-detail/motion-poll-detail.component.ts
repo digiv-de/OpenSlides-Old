@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, ViewEncapsulation } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ViewEncapsulation } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -44,6 +44,10 @@ export class MotionPollDetailComponent extends BasePollDetailComponentDirective<
 
     public isVoteWeightActive: boolean;
 
+    public get showResults(): boolean {
+        return this.hasPerms() || this.poll.isPublished;
+    }
+
     public constructor(
         title: Title,
         translate: TranslateService,
@@ -56,10 +60,24 @@ export class MotionPollDetailComponent extends BasePollDetailComponentDirective<
         pollService: MotionPollService,
         votesRepo: MotionVoteRepositoryService,
         configService: ConfigService,
-        private operator: OperatorService,
-        private router: Router
+        protected operator: OperatorService,
+        private router: Router,
+        protected cd: ChangeDetectorRef
     ) {
-        super(title, translate, matSnackbar, repo, route, groupRepo, prompt, pollDialog, pollService, votesRepo);
+        super(
+            title,
+            translate,
+            matSnackbar,
+            repo,
+            route,
+            groupRepo,
+            prompt,
+            pollDialog,
+            pollService,
+            votesRepo,
+            operator,
+            cd
+        );
         configService
             .get<boolean>('users_activate_vote_weight')
             .subscribe(active => (this.isVoteWeightActive = active));

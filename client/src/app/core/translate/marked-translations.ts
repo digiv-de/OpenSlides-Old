@@ -37,7 +37,11 @@ _('Server settings required to activate Jitsi Meet integration.');
 _('Livestream url');
 _('Remove URL to deactivate livestream. Check extra group permission to see livestream.');
 _('Livestream poster image url');
-_('Shows if livestream is not started. Recommended image format: 500x281px, PNG or JPG');
+_('Shows if livestream is not started. Recommended image format: 500x200px, PNG or JPG');
+_('Number of next speakers automatically connecting to the live conference');
+_('Live conference has to be active. Choose 0 to disable auto connect.');
+_('Automatically open the microphone for new conference speakers');
+_('Automatically open the web cam for new conference speakers');
 _('Show this text on the login page');
 _('OpenSlides Theme');
 _('Export');
@@ -73,6 +77,7 @@ _('Header font color');
 _('Headline color');
 _('Chyron background color');
 _('Chyron font color');
+_(`You can't delete the last projector.`);
 
 // Agenda config strings
 _('Enable numbering for agenda items');
@@ -100,6 +105,7 @@ _('Show orange countdown in the last x seconds of speaking time');
 _('Enter duration in seconds. Choose 0 to disable warning color.');
 _('Hide the amount of speakers in subtitle of list of speakers slide');
 _('Couple countdown with the list of speakers');
+_('Enable points of order');
 _('[Begin speech] starts the countdown, [End speech] stops the countdown.');
 _('Only present participants can be added to the list of speakers');
 _('Show hint »first speech« in the list of speakers management view');
@@ -153,6 +159,7 @@ _('Number of minimal digits for identifier');
 _('Uses leading zeros to sort motions correctly by identifier.');
 _('Allow blank in identifier');
 _("Blank between prefix and number, e.g. 'A 001'.");
+_('No motions were numbered');
 // subgroup Amendments
 _('Amendments');
 _('Activate statute amendments');
@@ -256,6 +263,8 @@ _('red');
 _('green');
 _('lightblue');
 _('yellow');
+_('You cannot delete the first state of the workflow.');
+_('You cannot delete the last workflow.');
 // misc for motions
 _('Amendment');
 _('Statute amendment for');
@@ -300,18 +309,11 @@ _('Finished');
 _('In the election process');
 
 // Voting strings
-_('Voting type');
-_('analog');
-_('nominal');
-_('non-nominal');
-_('Start voting');
-_('Stop voting');
-_('Publish');
-_('Entitled to vote');
-_('Voting method');
-_('Amount of votes');
 _('Motion votes');
 _('Ballots');
+_('You cannot delegate a vote to a user who has already delegated his vote.');
+_('You cannot delegate a delegation of vote to another user (cascading not allowed).');
+_('You cannot delegate a vote to yourself.');
 
 // ** Users **
 // permission strings (see models.py of each Django app)
@@ -327,9 +329,14 @@ _('Can see elections');
 _('Can nominate another participant');
 _('Can nominate oneself');
 _('Can manage elections');
+_('Electronic voting is disabled. Only analog polls are allowed');
+_('Anonymizing can only be done after finishing a poll.');
+_('You can just anonymize named polls');
+_('You cannot vote since your vote right is delegated.');
 // core
 _('Can see the projector');
 _('Can manage the projector');
+_('Can see the autopilot');
 _('Can see the front page');
 _('Can manage tags');
 _('Can manage configuration');
@@ -341,6 +348,9 @@ _('Can see the list of files');
 _('Can upload files');
 _('Can manage files');
 _('Can see hidden files');
+_('A file with this title or filename already exists in this directory.');
+_('The name contains invalid characters: "/"');
+_('The directory does not exist');
 // motions
 _('Can see motions');
 _('Can see motions in internal state');
@@ -403,9 +413,13 @@ _(
 
 // users misc
 _('Username or password is not correct.');
+_('Please login via your identity provider');
+_('You are not authenticated.');
 _('Guest');
 _('Participant');
 _('No users with email {0} found.');
+_('You can not delete yourself.');
+_('You can not deactivate yourself.');
 
 // default groups
 _('Default');
@@ -439,6 +453,7 @@ _('Comment {arg1} updated');
 // core misc strings
 _('items per page');
 _('Tag');
+_('Not allowed in demo mode');
 
 // strings which are not extracted as translateable strings from client code
 _('Foreground color');

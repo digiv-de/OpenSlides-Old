@@ -1,4 +1,4 @@
-<mat-card class="os-card" *ngIf="poll">
+<mat-card class="os-card" *ngIf="showPoll">
     <div class="assignment-poll-wrapper">
         <div>
             <!-- Title -->
@@ -9,15 +9,22 @@
             </mat-card-title>
 
             <!-- Type and State -->
-            <div class="italic spacer-bottom-20">
-                <span *osPerms="'assignments.can_manage'; and: poll.type === 'pseudoanonymous'">
-                    <button mat-icon-button color="warn" (click)="openVotingWarning()">
-                        <mat-icon>
-                            warning
-                        </mat-icon>
-                    </button>
+            <div class="type-and-state italic spacer-bottom-20">
+                <span *osPerms="'assignments.can_manage'; and: poll.isEVoting">
+                    <os-icon-container
+                        class="poll-type"
+                        icon="info"
+                        size="large"
+                        color="primary"
+                        [swap]="true"
+                        [showIcon]="poll.isAnon"
+                        (iconAction)="openVotingWarning()"
+                    >
+                        {{ poll.typeVerbose | translate }}
+                    </os-icon-container>
+                    <span *ngIf="poll.isAnon">&nbsp;</span>
+                    &middot;&nbsp;
                 </span>
-                <span *ngIf="poll.type !== 'analog'"> {{ poll.typeVerbose | translate }} &middot; </span>
                 <span>
                     {{ poll.stateVerbose | translate }}
                 </span>
@@ -64,19 +71,8 @@
 
         <!-- Chart / Table -->
         <div *ngIf="poll.stateHasVotes" class="poll-result-wrapper">
-            <div *osPerms="'assignments.can_manage'; or: poll.isPublished">
-                <os-assignment-poll-detail-content
-                    routerLink="/assignments/polls/{{ poll.id }}"
-                    [poll]="poll"
-                ></os-assignment-poll-detail-content>
-            </div>
-
-            <!-- Cannot see unpublished -->
-            <div *osPerms="'assignments.can_manage'; complement: true">
-                <span *ngIf="poll.isFinished">
-                    {{ 'Counting of votes is in progress ...' | translate }}
-                </span>
-            </div>
+            <os-assignment-poll-detail-content routerLink="/assignments/polls/{{ poll.id }}" [poll]="poll">
+            </os-assignment-poll-detail-content>
         </div>
 
         <!-- Poll progress bar -->
@@ -87,19 +83,12 @@
         <!-- The Vote -->
         <os-assignment-poll-vote *ngIf="poll.canBeVotedFor()" [poll]="poll"></os-assignment-poll-vote>
 
-        <!-- More-Button -->
-        <div class="poll-detail-button-wrapper">
-            <a
-                mat-icon-button
-                routerLink="/assignments/polls/{{ poll.id }}"
-                matTooltip="{{ 'More' | translate }}"
-                *ngIf="poll.isPublished"
-            >
-                <mat-icon class="small-icon">
-                    visibility
-                </mat-icon>
-            </a>
-        </div>
+        <!-- Meta-Info -->
+        <os-assignment-poll-meta-info
+            [poll]="poll"
+            [showCandidates]="showCandidatesInMetaInfo"
+            *ngIf="showMetaInfo"
+        ></os-assignment-poll-meta-info>
     </div>
 </mat-card>
 

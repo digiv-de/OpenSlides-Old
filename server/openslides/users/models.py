@@ -22,7 +22,12 @@ from openslides.utils.manager import BaseManager
 
 from ..core.config import config
 from ..utils.auth import GROUP_ADMIN_PK
-from ..utils.models import CASCADE_AND_AUTOUPDATE, RESTModelMixin
+from ..utils.autoupdate import inform_changed_data
+from ..utils.models import (
+    CASCADE_AND_AUTOUPDATE,
+    SET_NULL_AND_AUTOUPDATE,
+    RESTModelMixin,
+)
 from .access_permissions import (
     GroupAccessPermissions,
     PersonalNoteAccessPermissions,
@@ -54,7 +59,8 @@ class UserManager(BaseUserManager):
                         queryset=Permission.objects.select_related("content_type"),
                     )
                 ),
-            )
+            ),
+            "vote_delegated_from_users",
         )
 
     def create_user(self, username, password, skip_autoupdate=False, **kwargs):
@@ -82,6 +88,8 @@ class UserManager(BaseUserManager):
         admin.password = make_password(admin.default_password)
         admin.save(skip_autoupdate=skip_autoupdate)
         admin.groups.add(GROUP_ADMIN_PK)
+        if not skip_autoupdate:
+            inform_changed_data(admin)
         return created
 
     def generate_username(self, first_name, last_name):
@@ -162,6 +170,14 @@ class User(RESTModelMixin, PermissionsMixin, AbstractBaseUser):
 
     vote_weight = models.DecimalField(
         default=Decimal("1"), max_digits=15, decimal_places=6, null=False, blank=True
+    )
+
+    vote_delegated_to = models.ForeignKey(
+        "self",
+        on_delete=SET_NULL_AND_AUTOUPDATE,
+        null=True,
+        blank=True,
+        related_name="vote_delegated_from_users",
     )
 
     objects = UserManager()
