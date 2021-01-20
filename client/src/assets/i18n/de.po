@@ -887,7 +887,7 @@ msgid "Default voting type"
 msgstr "Voreingestellte Art der Stimmabgabe"
 
 msgid "Delegates"
-msgstr "Delegierte"
+msgstr "Stimmberechtigt"
 
 msgid "Delegation of vote"
 msgstr "Stimmrechtsübertragung"
