@@ -181,6 +181,24 @@ def create_builtin_groups_and_admin(**kwargs):
     group_committee.save(skip_autoupdate=True)
     group_committee.permissions.add(*committees_permissions)
 
+    # Beratend (pk 6)
+    beratend_permissions = (
+        permission_dict["agenda.can_see"],
+        permission_dict["agenda.can_see_internal_items"],
+        permission_dict["agenda.can_see_list_of_speakers"],
+        permission_dict["assignments.can_see"],
+        permission_dict["core.can_see_frontpage"],
+        permission_dict["core.can_see_projector"],
+        permission_dict["core.can_see_autopilot"],
+        permission_dict["mediafiles.can_see"],
+        permission_dict["motions.can_see"],
+        permission_dict["users.can_see_name"],
+        permission_dict["users.can_change_password"],
+    )
+    group_beratend = Group(pk=6, name="Beratend")
+    group_beratend.save(skip_autoupdate=True)
+    group_beratend.permissions.add(*beratend_permissions)
+
     # Create or reset admin user
     User.objects.create_or_reset_admin_user(skip_autoupdate=True)
 
