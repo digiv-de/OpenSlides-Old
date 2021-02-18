@@ -8,7 +8,9 @@ dnl   ( set -a; source .env; m4 docker-stack.yml.m4 ) > docker-stack.yml
 dnl
 dnl ----------------------------------------
 divert(-1)dnl
-define(`read_env', `esyscmd(`printf "%s" "$$1"')')
+dnl return env variable (quoted)
+define(`read_env', `esyscmd(`printf "\`%s'" "$$1"')')
+dnl return env variable if set; otherwise, return given alternative value
 define(`ifenvelse', `ifelse(read_env(`$1'),, `$2', read_env(`$1'))')
 
 define(`BACKEND_IMAGE',
@@ -44,6 +46,7 @@ x-osserver:
 x-osserver-env: &default-osserver-env
     AMOUNT_REPLICAS: ifenvelse(`REDIS_RO_SERVICE_REPLICAS', 3)
     AUTOUPDATE_DELAY: ifenvelse(`AUTOUPDATE_DELAY', 1)
+    DEMO_USERS: "ifenvelse(`DEMO_USERS',)"
     CONNECTION_POOL_LIMIT: ifenvelse(`CONNECTION_POOL_LIMIT', 100)
     DATABASE_HOST: "ifenvelse(`DATABASE_HOST', pgbouncer)"
     DATABASE_PASSWORD: "ifenvelse(`DATABASE_PASSWORD', openslides)"
@@ -55,7 +58,9 @@ x-osserver-env: &default-osserver-env
     EMAIL_HOST_PASSWORD: "ifenvelse(`EMAIL_HOST_PASSWORD',)"
     EMAIL_HOST_USER: "ifenvelse(`EMAIL_HOST_USER',)"
     EMAIL_PORT: ifenvelse(`EMAIL_PORT', 25)
+    EMAIL_USE_SSL: "ifenvelse(`EMAIL_USE_SSL',)"
     EMAIL_USE_TLS: "ifenvelse(`EMAIL_USE_TLS',)"
+    EMAIL_TIMEOUT: "ifenvelse(`EMAIL_TIMEOUT',)"
     ENABLE_ELECTRONIC_VOTING: "ifenvelse(`ENABLE_ELECTRONIC_VOTING', False)"
     ENABLE_SAML: "ifenvelse(`ENABLE_SAML', False)"
     INSTANCE_DOMAIN: "ifenvelse(`INSTANCE_DOMAIN', http://example.com:8000)"
@@ -234,6 +239,9 @@ ifelse(read_env(`PGNODE_3_ENABLED'), 1, `'
     image: ifenvelse(`DEFAULT_DOCKER_REGISTRY', openslides)/openslides-media-service:latest
     environment:
       - CHECK_REQUEST_URL=server:8000/check-media/
+      - CACHE_SIZE=ifenvelse(`CACHE_SIZE', 10)
+      - CACHE_DATA_MIN_SIZE_KB=ifenvelse(`CACHE_DATA_MIN_SIZE_KB', 0)
+      - CACHE_DATA_MAX_SIZE_KB=ifenvelse(`CACHE_DATA_MAX_SIZE_KB', 10240)
     deploy:
       replicas: ifenvelse(`MEDIA_SERVICE_REPLICAS', 8)
       restart_policy:

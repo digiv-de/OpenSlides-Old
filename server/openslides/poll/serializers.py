@@ -12,7 +12,15 @@ from ..utils.rest_api import (
 from .models import BasePoll
 
 
-BASE_VOTE_FIELDS = ("id", "weight", "value", "user", "option", "pollstate")
+BASE_VOTE_FIELDS = (
+    "id",
+    "weight",
+    "value",
+    "user",
+    "delegated_user",
+    "option",
+    "pollstate",
+)
 
 
 class BaseVoteSerializer(ModelSerializer):
@@ -118,7 +126,7 @@ class BasePollSerializer(ModelSerializer):
         ):
             raise ValidationError(
                 {
-                    "detail": "Electronic voting is disabled. Only analog polls are allowed"
+                    "detail": "Electronic voting is disabled. Only analog polls are allowed."
                 }
             )
         return data

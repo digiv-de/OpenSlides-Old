@@ -6,7 +6,7 @@ import { OpenSlidesStatusService } from 'app/core/core-services/openslides-statu
 import { StorageService } from 'app/core/core-services/storage.service';
 import { GroupRepositoryService } from 'app/core/repositories/users/group-repository.service';
 import { BaseFilterListService, OsFilter } from 'app/core/ui-services/base-filter-list.service';
-import { ViewUser } from '../models/view-user';
+import { DelegationType, ViewUser } from '../models/view-user';
 
 /**
  * Filter the user list
@@ -92,6 +92,24 @@ export class UserFilterListService extends BaseFilterListService<ViewUser> {
                 options: [
                     { condition: false, label: this.translate.instant('Has changed vote weight') },
                     { condition: true, label: this.translate.instant('Has unchanged vote weight') }
+                ]
+            },
+            {
+                property: 'delegationType',
+                label: this.translate.instant('Delegation of vote'),
+                options: [
+                    {
+                        condition: DelegationType.Transferred,
+                        label: this.translate.instant('Voting right received from (principals)')
+                    },
+                    {
+                        condition: DelegationType.Received,
+                        label: this.translate.instant('Voting right delegated to (proxy)')
+                    },
+                    {
+                        condition: DelegationType.Neither,
+                        label: this.translate.instant('No delegation of vote')
+                    }
                 ]
             }
         ];

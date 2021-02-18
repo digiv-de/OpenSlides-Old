@@ -29,6 +29,11 @@
     [(selectedRows)]="selectedRows"
     (dataSourceChange)="onDataSourceChange($event)"
 >
+    <!-- extra content in the filter bar -->
+    <div class="filter-bar-info-slot" *ngIf="showVoteWeight">
+        &nbsp;<span>({{ 'Vote weight' | translate }} {{ totalVoteWeight }})</span>
+    </div>
+
     <!-- Name column -->
     <div *pblNgridCellDef="'short_name'; row as user; rowContext as rowContext" class="cell-slot fill">
         <a class="detail-link" [routerLink]="user.id" *ngIf="!isMultiSelect"></a>
@@ -43,10 +48,7 @@
                 <mat-icon matTooltip="{{ 'Is committee' | translate }}" *ngIf="user.is_committee">
                     account_balance
                 </mat-icon>
-                <mat-icon
-                    matTooltip="{{ 'Inactive' | translate }}"
-                    *ngIf="!user.is_active && this.operator.hasPerms('users.see_extra')"
-                >
+                <mat-icon matTooltip="{{ 'Inactive' | translate }}" *ngIf="!user.is_active && canSeeExtra">
                     block
                 </mat-icon>
             </div>
@@ -62,7 +64,7 @@
     >
         <div class="groupsCell">
             <div *ngIf="user.groups && user.groups.length">
-                <os-icon-container icon="people">
+                <os-icon-container icon="people" noWrap="true">
                     <span *ngFor="let group of user.groups; let last = last">
                         {{ group.getTitle() | translate }}<span *ngIf="!last">,</span>
                     </span>
@@ -73,6 +75,14 @@
             </div>
             <div *ngIf="user.number" class="spacer-top-5">
                 <os-icon-container icon="perm_identity">{{ user.number }}</os-icon-container>
+            </div>
+
+            <div *ngIf="user.vote_delegated_to_id" class="spacer-top-5" matTooltip="{{ 'Voting right delegated to (proxy)' | translate }}">
+                <os-icon-container icon="forward" noWrap="true">{{ user.voteDelegatedTo }}</os-icon-container>
+            </div>
+
+            <div *ngIf="user.vote_delegated_from_users_id?.length" class="spacer-top-5" matTooltip="{{ 'Voting right received from (principals)' | translate }}">
+                <os-icon-container icon="work" noWrap="true">{{ user.voteDelegationsFrom }}</os-icon-container>
             </div>
         </div>
     </div>
@@ -90,9 +100,7 @@
             </mat-icon>
 
             <!-- Has comment indicator -->
-            <mat-icon inline *ngIf="!!user.comment" matTooltip="{{ user.comment }}">
-                comment
-            </mat-icon>
+            <mat-icon inline *ngIf="!!user.comment" matTooltip="{{ user.comment }}"> comment </mat-icon>
 
             <os-icon-container *ngIf="user.isSamlUser" icon="device_hub"
                 ><span>{{ 'Is SAML user' | translate }}</span></os-icon-container
@@ -132,10 +140,14 @@
         <os-projector-button [object]="user" [menuItem]="true"></os-projector-button>
 
         <!-- Presence -->
-        <button mat-menu-item (click)="setPresent(user)">
-            <mat-icon color="accent"> {{ user.is_present ? 'check_box' : 'check_box_outline_blank' }} </mat-icon>
+        <mat-checkbox
+            class="mat-menu-item"
+            (change)="setPresent(user)"
+            [checked]="user.is_present"
+            [disabled]="isPresentToggleDisabled(user)"
+        >
             <span>{{ 'Present' | translate }}</span>
-        </button>
+        </mat-checkbox>
     </ng-template>
 </mat-menu>
 
@@ -271,6 +283,23 @@
             </mat-select>
         </mat-form-field>
         <mat-form-field>
+            <os-search-value-selector
+                [(ngModel)]="infoDialog.vote_delegated_from_users_id"
+                [multiple]="true"
+                placeholder="{{ 'Voting right received from (principals)' | translate }}"
+                [inputListValues]="users"
+            ></os-search-value-selector>
+        </mat-form-field>
+        <mat-form-field>
+            <os-search-value-selector
+                [(ngModel)]="infoDialog.vote_delegated_to_id"
+                [multiple]="false"
+                [includeNone]="true"
+                placeholder="{{ 'Voting right delegated to (proxy)' | translate }}"
+                [inputListValues]="users"
+            ></os-search-value-selector>
+        </mat-form-field>
+        <mat-form-field>
             <mat-select placeholder="{{ 'Gender' | translate }}" [(ngModel)]="infoDialog.gender">
                 <mat-option>-</mat-option>
                 <mat-option *ngFor="let gender of genderList" [value]="gender">{{ gender | translate }}</mat-option>
@@ -300,6 +329,8 @@
             color="accent"
             [mat-dialog-close]="{
                 groups_id: infoDialog.groups_id,
+                vote_delegated_from_users_id: infoDialog.vote_delegated_from_users_id,
+                vote_delegated_to_id: infoDialog.vote_delegated_to_id,
                 gender: infoDialog.gender,
                 number: infoDialog.number,
                 structure_level: infoDialog.structure_level

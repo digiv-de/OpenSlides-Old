@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 
+import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import { TranslateService } from '@ngx-translate/core';
 
 import { ConstantsService } from 'app/core/core-services/constants.service';
@@ -23,6 +24,7 @@ import {
     VotingResult
 } from 'app/site/polls/services/poll.service';
 
+export const UnknownUserLabel = _('Deleted user');
 @Injectable({
     providedIn: 'root'
 })
@@ -93,6 +95,14 @@ export class AssignmentPollService extends PollService {
     private getGlobalVoteKeys(poll: ViewAssignmentPoll | PollData): VotingResult[] {
         return [
             {
+                vote: 'amount_global_yes',
+                showPercent: this.showPercentOfValidOrCast(poll),
+                hide:
+                    poll.amount_global_yes === VOTE_UNDOCUMENTED ||
+                    !poll.amount_global_yes ||
+                    poll.pollmethod === AssignmentPollMethod.N
+            },
+            {
                 vote: 'amount_global_no',
                 showPercent: this.showPercentOfValidOrCast(poll),
                 hide: poll.amount_global_no === VOTE_UNDOCUMENTED || !poll.amount_global_no
@@ -109,12 +119,30 @@ export class AssignmentPollService extends PollService {
         const tableData: PollTableData[] = poll.options
             .sort((a, b) => {
                 if (this.sortByVote) {
-                    return b.yes - a.yes;
-                } else {
-                    // PollData does not have weight, we need to rely on the order of things.
-                    if (a.weight && b.weight) {
-                        return b.weight - a.weight;
+                    let compareValue;
+                    if (poll.pollmethod === AssignmentPollMethod.N) {
+                        // least no on top:
+                        compareValue = a.no - b.no;
+                    } else {
+                        // most yes on top
+                        compareValue = b.yes - a.yes;
                     }
+
+                    // Equal votes, sort by weight to have equal votes correctly sorted.
+                    if (compareValue === 0 && a.weight && b.weight) {
+                        // least weight on top
+                        return a.weight - b.weight;
+                    } else {
+                        return compareValue;
+                    }
+                }
+
+                // PollData does not have weight, we need to rely on the order of things.
+                if (a.weight && b.weight) {
+                    // least weight on top
+                    return a.weight - b.weight;
+                } else {
+                    return 0;
                 }
             })
             .map((candidate: ViewAssignmentOption) => {
@@ -133,17 +161,20 @@ export class AssignmentPollService extends PollService {
                 };
 
                 // Since pollData does not have any subtitle option
-                if (candidate instanceof ViewAssignmentOption) {
+                if (candidate instanceof ViewAssignmentOption && candidate.user) {
                     pollTableEntry.votingOption = candidate.user.short_name;
                     pollTableEntry.votingOptionSubtitle = candidate.user.getLevelAndNumber();
-                } else {
+                } else if (candidate.user) {
                     pollTableEntry.votingOption = (candidate as PollDataOption).user.short_name;
+                } else {
+                    pollTableEntry.votingOption = UnknownUserLabel;
                 }
 
                 return pollTableEntry;
             });
         tableData.push(...this.formatVotingResultToTableData(this.getGlobalVoteKeys(poll), poll));
         tableData.push(...this.formatVotingResultToTableData(super.getSumTableKeys(poll), poll));
+
         return tableData;
     }
 
@@ -190,7 +221,7 @@ export class AssignmentPollService extends PollService {
             case AssignmentPollPercentBase.YNA:
                 totalByBase = this.sumOptionsYNA(poll);
                 break;
-            case AssignmentPollPercentBase.Votes:
+            case AssignmentPollPercentBase.Y:
                 totalByBase = this.sumOptionsYNA(poll);
                 break;
             case AssignmentPollPercentBase.Valid:
@@ -221,8 +252,8 @@ export class AssignmentPollService extends PollService {
                 }
                 return resultLabel;
             });
-
-            return `${option.user.short_name} · ${votingResults.join(' · ')}`;
+            const optionName = option.user?.short_name ?? UnknownUserLabel;
+            return `${optionName} · ${votingResults.join(' · ')}`;
         });
     }
 }

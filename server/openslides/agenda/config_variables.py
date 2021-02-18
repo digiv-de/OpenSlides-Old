@@ -170,6 +170,16 @@ def get_config_variables():
     )
 
     yield ConfigVariable(
+        name="agenda_enable_point_of_order_speakers",
+        default_value=False,
+        input_type="boolean",
+        label="Enable points of order",
+        weight=229,
+        group="Agenda",
+        subgroup="List of speakers",
+    )
+
+    yield ConfigVariable(
         name="agenda_hide_amount_of_speakers",
         default_value=False,
         input_type="boolean",

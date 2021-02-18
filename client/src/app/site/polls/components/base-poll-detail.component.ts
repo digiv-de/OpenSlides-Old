@@ -1,4 +1,4 @@
-import { Directive, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Directive, OnInit } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
@@ -8,6 +8,7 @@ import { Label } from 'ng2-charts';
 import { BehaviorSubject, from, Observable } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
 
+import { OperatorService } from 'app/core/core-services/operator.service';
 import { Deferred } from 'app/core/promises/deferred';
 import { BaseRepository } from 'app/core/repositories/base-repository';
 import { GroupRepositoryService } from 'app/core/repositories/users/group-repository.service';
@@ -69,11 +70,6 @@ export abstract class BasePollDetailComponentDirective<V extends ViewBasePoll, S
      */
     public labels: Label[] = [];
 
-    /**
-     * Subject, that holds the data for the chart.
-     */
-    public chartDataSubject: BehaviorSubject<ChartData> = new BehaviorSubject(null);
-
     // The observable for the votes-per-user table
     public votesDataObservable: Observable<BaseVoteData[]>;
 
@@ -104,7 +100,9 @@ export abstract class BasePollDetailComponentDirective<V extends ViewBasePoll, S
         protected promptService: PromptService,
         protected pollDialog: BasePollDialogService<V, S>,
         protected pollService: S,
-        protected votesRepo: BaseRepository<ViewBaseVote, BaseVote, object>
+        protected votesRepo: BaseRepository<ViewBaseVote, BaseVote, object>,
+        protected operator: OperatorService,
+        protected cd: ChangeDetectorRef
     ) {
         super(title, translate, matSnackbar);
         this.setup();
@@ -186,14 +184,6 @@ export abstract class BasePollDetailComponentDirective<V extends ViewBasePoll, S
     protected abstract createVotesData(): void;
 
     /**
-     * Initializes data for the shown chart.
-     * Could be overwritten to implement custom chart data.
-     */
-    protected initChartData(): void {
-        this.chartDataSubject.next(this.pollService.generateChartData(this.poll));
-    }
-
-    /**
      * Helper-function to search for this poll and display data or create a new one.
      */
     private findComponentById(): void {
@@ -204,11 +194,37 @@ export abstract class BasePollDetailComponentDirective<V extends ViewBasePoll, S
                     if (poll) {
                         this.poll = poll;
                         this.createVotesData();
-                        this.initChartData();
                         this.optionsLoaded.resolve();
+                        this.cd.markForCheck();
                     }
                 })
             );
+        }
+    }
+
+    protected userHasVoteDelegation(user: ViewUser): boolean {
+        /**
+         * This will be false if the operator does not have "can_see_extra_data"
+         */
+        if (user.isVoteRightDelegated) {
+            return true;
+        } else if (this.operator.viewUser.canVoteFor(user)) {
+            return true;
+        }
+
+        return false;
+    }
+
+    protected getUsersVoteDelegation(user: ViewUser): ViewUser {
+        /**
+         * This will be false if the operator does not have "can_see_extra_data"
+         */
+        if (!!user.voteDelegatedTo) {
+            return user.voteDelegatedTo;
+        }
+
+        if (this.operator.viewUser.canVoteFor(user)) {
+            return this.operator.viewUser;
         }
     }
 }

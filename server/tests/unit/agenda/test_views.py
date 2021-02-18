@@ -1,6 +1,8 @@
 from unittest import TestCase
 from unittest.mock import MagicMock, patch
 
+import pytest
+
 from openslides.agenda.views import ListOfSpeakersViewSet
 
 
@@ -19,6 +21,7 @@ class ListOfSpeakersViewSetManageSpeaker(TestCase):
     @patch("openslides.agenda.views.inform_changed_data")
     @patch("openslides.agenda.views.has_perm")
     @patch("openslides.agenda.views.Speaker")
+    @pytest.mark.django_db(transaction=False)
     def test_add_oneself_as_speaker(self, mock_speaker, mock_has_perm, mock_icd):
         self.request.method = "POST"
         self.request.user = 1
@@ -29,20 +32,21 @@ class ListOfSpeakersViewSetManageSpeaker(TestCase):
         self.view_instance.manage_speaker(self.request)
 
         mock_speaker.objects.add.assert_called_with(
-            self.request.user, self.mock_list_of_speakers
+            self.request.user, self.mock_list_of_speakers, point_of_order=False
         )
 
     @patch("openslides.agenda.views.inform_changed_data")
     @patch("openslides.agenda.views.has_perm")
     @patch("openslides.agenda.views.get_user_model")
     @patch("openslides.agenda.views.Speaker")
+    @pytest.mark.django_db(transaction=False)
     def test_add_someone_else_as_speaker(
         self, mock_speaker, mock_get_user_model, mock_has_perm, mock_icd
     ):
         self.request.method = "POST"
         self.request.user = 1
         self.request.data = {
-            "user": "2"
+            "user": 2
         }  # It is assumed that the request user has pk!=2.
         mock_get_user_model.return_value = MockUser = MagicMock()
         MockUser.objects.get.return_value = mock_user = MagicMock()
@@ -52,20 +56,22 @@ class ListOfSpeakersViewSetManageSpeaker(TestCase):
 
         MockUser.objects.get.assert_called_with(pk=2)
         mock_speaker.objects.add.assert_called_with(
-            mock_user, self.mock_list_of_speakers
+            mock_user, self.mock_list_of_speakers, point_of_order=False
         )
 
     @patch("openslides.agenda.views.Speaker")
+    @pytest.mark.django_db(transaction=False)
     def test_remove_oneself(self, mock_speaker):
         self.request.method = "DELETE"
         self.request.data = {}
         self.view_instance.manage_speaker(self.request)
         mock_queryset = mock_speaker.objects.filter.return_value.exclude.return_value
-        mock_queryset.get.return_value.delete.assert_called_with()
+        mock_queryset.all.return_value.delete.assert_called_with()
 
     @patch("openslides.agenda.views.inform_changed_data")
     @patch("openslides.agenda.views.has_perm")
     @patch("openslides.agenda.views.Speaker")
+    @pytest.mark.django_db(transaction=False)
     def test_remove_someone_else(
         self, mock_speaker, mock_has_perm, mock_inform_changed_data
     ):

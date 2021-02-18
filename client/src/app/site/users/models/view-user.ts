@@ -14,6 +14,12 @@ export interface UserTitleInformation {
     number?: string;
 }
 
+export enum DelegationType {
+    Transferred = 1,
+    Received,
+    Neither
+}
+
 export class ViewUser extends BaseProjectableViewModel<User> implements UserTitleInformation, Searchable {
     public static COLLECTIONSTRING = User.COLLECTIONSTRING;
 
@@ -45,6 +51,19 @@ export class ViewUser extends BaseProjectableViewModel<User> implements UserTitl
         }
     }
 
+    public get delegationName(): string | undefined {
+        return this.voteDelegatedTo?.getFullName();
+    }
+
+    public get delegationType(): DelegationType {
+        if (this.user.isVoteRightDelegated) {
+            return DelegationType.Transferred;
+        } else if (this.user.hasVoteRightFromOthers) {
+            return DelegationType.Received;
+        }
+        return DelegationType.Neither;
+    }
+
     // Will be set by the repository
     public getFullName: () => string;
     public getShortName: () => string;
@@ -61,7 +80,8 @@ export class ViewUser extends BaseProjectableViewModel<User> implements UserTitl
             { key: 'First name', value: this.first_name },
             { key: 'Last name', value: this.last_name },
             { key: 'Structure level', value: this.structure_level },
-            { key: 'Number', value: this.number }
+            { key: 'Number', value: this.number },
+            { key: 'Delegation of vote', value: this.delegationName }
         ];
         return { properties, searchValue: properties.map(property => property.value) };
     }
@@ -82,9 +102,15 @@ export class ViewUser extends BaseProjectableViewModel<User> implements UserTitl
             getDialogTitle: () => this.getTitle()
         };
     }
+
+    public canVoteFor(user: ViewUser): boolean {
+        return this.vote_delegated_from_users_id.includes(user.id);
+    }
 }
 interface IUserRelations {
     groups: ViewGroup[];
+    voteDelegatedTo: ViewUser;
+    voteDelegationsFrom: ViewUser[];
 }
 
 export interface ViewUser extends User, IUserRelations {}

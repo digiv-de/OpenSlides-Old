@@ -76,7 +76,7 @@ export class AssignmentPollPdfService extends PollPdfService {
             subtitle = subtitle.substring(0, 90) + '...';
         }
         let rowsPerPage = 1;
-        if (poll.pollmethod === 'votes') {
+        if (poll.pollmethod === AssignmentPollMethod.Y) {
             if (poll.options.length <= 2) {
                 rowsPerPage = 4;
             } else if (poll.options.length <= 5) {
@@ -141,12 +141,23 @@ export class AssignmentPollPdfService extends PollPdfService {
             return a.weight - b.weight;
         });
         const resultObject = candidates.map(cand => {
-            return poll.pollmethod === 'votes'
-                ? this.createBallotOption(cand.user.full_name)
-                : this.createYNBallotEntry(cand.user.full_name, poll.pollmethod);
+            const candidateName = cand.user?.full_name;
+            if (candidateName) {
+                return poll.pollmethod === AssignmentPollMethod.Y
+                    ? this.createBallotOption(candidateName)
+                    : this.createYNBallotEntry(candidateName, poll.pollmethod);
+            } else {
+                throw new Error(this.translate.instant('This ballot contains deleted users.'));
+            }
         });
 
-        if (poll.pollmethod === 'votes') {
+        if (poll.pollmethod === AssignmentPollMethod.Y) {
+            if (poll.global_yes) {
+                const yesEntry = this.createBallotOption(this.translate.instant('Yes'));
+                yesEntry.margin[1] = 25;
+                resultObject.push(yesEntry);
+            }
+
             if (poll.global_no) {
                 const noEntry = this.createBallotOption(this.translate.instant('No'));
                 noEntry.margin[1] = 25;
