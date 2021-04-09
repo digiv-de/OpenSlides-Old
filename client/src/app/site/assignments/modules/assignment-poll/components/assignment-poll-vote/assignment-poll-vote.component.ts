@@ -213,13 +213,25 @@ export class AssignmentPollVoteComponent extends BasePollVoteComponentDirective<
             }
         } else {
             // YN/YNA
+            // lm: erweiterung max. votes by YNA
+            const maxVotesAmount = this.poll.max_votes_amount;
+
             if (
                 this.voteRequestData[user.id].votes[optionId] &&
                 this.voteRequestData[user.id].votes[optionId] === vote
             ) {
                 delete this.voteRequestData[user.id].votes[optionId];
             } else {
-                this.voteRequestData[user.id].votes[optionId] = vote;
+                let tmpVotes = this.voteRequestData[user.id].votes;
+                let jaStimmen = Object.keys(tmpVotes).filter(key => tmpVotes[key] === 'Y').length;
+                jaStimmen += (vote === 'Y') ? 1 : 0; // aktuelle Stimme addieren
+
+                if (jaStimmen > maxVotesAmount) {
+                    this.raiseError('Es können nur max. ' + maxVotesAmount + ' Ja-Stimme(n) vergeben werden.');
+                    return;
+                } else {
+                    this.voteRequestData[user.id].votes[optionId] = vote;
+                }
             }
 
             // if you filled out every option, try to send
