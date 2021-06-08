@@ -11,6 +11,7 @@ import { ProjectorRepositoryService } from 'app/core/repositories/projector/proj
 import { DetailNavigable, isDetailNavigable } from 'app/shared/models/base/detail-navigable';
 import { ProjectorElement } from 'app/shared/models/core/projector';
 import { ListOfSpeakersComponent } from 'app/site/agenda/components/list-of-speakers/list-of-speakers.component';
+import { ConfigService } from 'app/core/ui-services/config.service';
 import { ViewListOfSpeakers } from 'app/site/agenda/models/view-list-of-speakers';
 import { BaseProjectableViewModel } from 'app/site/base/base-projectable-view-model';
 import { BaseViewComponentDirective } from 'app/site/base/base-view';
@@ -27,6 +28,9 @@ export class CinemaComponent extends BaseViewComponentDirective implements OnIni
     public projector: ViewProjector;
     private currentProjectorElement: ProjectorElement;
     public projectedViewModel: BaseProjectableViewModel;
+    public stimmungApiData: any = [{ anz: 0 }, { anz: 0 }, { anz: 0 }];
+    public apiUrl: string = '';
+    private counter: any = null;
 
     public get title(): string {
         if (this.projectedViewModel) {
@@ -91,7 +95,8 @@ export class CinemaComponent extends BaseViewComponentDirective implements OnIni
         private projectorRepo: ProjectorRepositoryService,
         private closService: CurrentListOfSpeakersService,
         private listOfSpeakersRepo: ListOfSpeakersRepositoryService,
-        private cd: ChangeDetectorRef
+        private cd: ChangeDetectorRef,
+        private configService: ConfigService,
     ) {
         super(title, translate, snackBar);
     }
@@ -114,6 +119,39 @@ export class CinemaComponent extends BaseViewComponentDirective implements OnIni
                 this.listOfSpeakers = clos;
             })
         );
+
+        this.configService.get<string>('general_stimmung_url').subscribe(val => {
+            this.apiUrl = val ? val + '/datasource' : '';
+        });
+
+        // Api Aufrufen alle 4 sekunden
+        if (this.apiUrl != '') {
+            // Api Daten initial aufrufen
+            fetch(this.apiUrl)
+                .then(response => response.json())
+                .then(resp => {
+                    this.stimmungApiData = resp;
+                });
+            if (this.counter == null) {
+                this.counter = setInterval(async () => {
+                    fetch(this.apiUrl)
+                        .then(response => response.json())
+                        .then(resp => {
+                            this.stimmungApiData = resp;
+                        });
+                }, 4000);
+            }
+        } else {
+            clearInterval(this.counter);
+            this.counter = null;
+        }
+    }
+
+    public ngOnDestroy(): void {
+        if (this.counter) {
+            clearInterval(this.counter);
+            this.counter = null;
+        }
     }
 
     public async toggleListOfSpeakersOpen(): Promise<void> {

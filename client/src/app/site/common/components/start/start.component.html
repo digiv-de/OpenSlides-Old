@@ -36,20 +36,3 @@
         </form>
     </ng-container>
 </mat-card>
-
-<mat-card *ngIf="apiUrl" [ngClass]="'os-card'" style="overflow: auto;">
-    <ng-container>
-        <div class="app-content" style="margin-left: 10px; margin-right:10px;">
-            <div class="title-slot">
-                <h2 style="margin-bottom: 5px;">Stimmung</h2>
-            </div>
-            <div class="proj-st-karten">
-                <div class="proj-st-karte st-gruen">{{ stimmungApiData[0].anz }}</div>
-
-                <div class="proj-st-karte st-gelb">{{ stimmungApiData[1].anz }}</div>
-
-                <div class="proj-st-karte st-rot">{{ stimmungApiData[2].anz }}</div>   
-            </div>
-        </div>
-    </ng-container>
-</mat-card>

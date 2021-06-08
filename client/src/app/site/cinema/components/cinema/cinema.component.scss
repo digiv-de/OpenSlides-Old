@@ -1,3 +1,32 @@
 .projector {
     border: 1px solid lightgray;
 }
+
+.proj-st-karten {
+    text-align: center;
+    width: 100%;
+    font-weight: bold;
+}
+.proj-st-karte {
+    font-size: 20px;
+    border-radius: 10px;
+    transition: margin .3s;
+    float: left;
+    height: 150px;
+    width: 80px;
+    margin-right: 5px;
+    line-height: 150px;
+}
+.st-gruen {
+   background: green; 
+   transform-origin: 100% 1%;
+   transform: rotate(-10deg);
+}
+.st-gelb {
+    background: yellow;
+}
+.st-rot {
+    background: red;
+    transform-origin: 0% 1%;
+    transform: rotate(10deg);
+}

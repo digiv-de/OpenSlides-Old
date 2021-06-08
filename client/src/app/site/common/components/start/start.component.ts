@@ -40,11 +40,6 @@ export class StartComponent extends BaseViewComponentDirective implements OnInit
     public isLocked = false;
     public isAntragSend = false;
 
-    public stimmungApiData: any = [{ anz: 0 }, { anz: 0 }, { anz: 0 }];
-    private counter: any = null;
-    private subscription: any = null;
-    public apiUrl: string = '';
-
     /**
      * Formular for the content.
      */
@@ -102,39 +97,8 @@ export class StartComponent extends BaseViewComponentDirective implements OnInit
             this.startContent.general_event_welcome_text = this.translate.instant(welcomeText);
         });
 
-        this.configService.get<string>('general_stimmung_url').subscribe(val => {
-            this.apiUrl = val ? val + '/datasource' : '';
-        });
-
-        // Api Aufrufen alle 4 sekunden
-        if (this.apiUrl != '') {
-            // Api Daten initial aufrufen
-            fetch(this.apiUrl)
-                .then(response => response.json())
-                .then(resp => {
-                    this.stimmungApiData = resp;
-                });
-            if (this.counter == null) {
-                this.counter = setInterval(async () => {
-                    fetch(this.apiUrl)
-                        .then(response => response.json())
-                        .then(resp => {
-                            this.stimmungApiData = resp;
-                        });
-                }, 4000);
-            }
-        } else {
-            clearInterval(this.counter);
-            this.counter = null;
-        }
     }
 
-    public ngOnDestroy(): void {
-        if (this.subscription) {
-            clearInterval(this.counter);
-            this.counter = null;
-        }
-    }
     /**
      * Changes to editing mode.
      */
