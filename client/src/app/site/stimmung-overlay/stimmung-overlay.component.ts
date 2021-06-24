@@ -28,6 +28,7 @@ export class StimmungOverlayComponent extends BaseViewComponentDirective impleme
     public isAntragSend = false;
     public apiUrl: string = '';
     private apiToken: string = '';
+    public goEnabled: boolean = true;
     public goAntraege: [] = [];
     public selGoAntrag: string = '';
 
@@ -67,6 +68,9 @@ export class StimmungOverlayComponent extends BaseViewComponentDirective impleme
         });
         this.configService.get<string>('general_stimmung_token').subscribe(val => {
             this.apiToken = val;
+        });
+        this.configService.get<boolean>('digiv_go_enabled').subscribe(val => {
+            this.goEnabled = val;
         });
         this.configService.get<string>('go_antraege').subscribe(val => {
             this.goAntraege = JSON.parse(val);

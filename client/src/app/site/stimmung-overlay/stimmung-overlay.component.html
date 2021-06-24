@@ -2,21 +2,23 @@
     <span>Interaktion</span>
 </h1>
 <div mat-dialog-content>
-    <h3>GO-Antrag</h3>
-    <p>ich stelle einen GO auf:
-        <mat-form-field>
-            <mat-select [(value)]="selGoAntrag">
-                <mat-option *ngFor="let x of goAntraege; let indexOfelement=index" [value]="indexOfelement">
-                    {{x}}
-                </mat-option>
-            </mat-select>
-        </mat-form-field>
-    </p>
-    <button mat-stroked-button [disabled]="selGoAntrag === ''" (click)="goAntrag()">
-        <mat-icon style="vertical-align: middle;">accessibility_new</mat-icon> GO Antrag stellen
-    </button>
-    <div class="alert" *ngIf="isAntragSend">
-        <span>Dein GO-Antrag wurde gesendet!</span>
+    <div *ngIf="goEnabled">
+        <h3>GO-Antrag</h3>
+        <p>ich stelle einen GO auf:
+            <mat-form-field>
+                <mat-select [(value)]="selGoAntrag">
+                    <mat-option *ngFor="let x of goAntraege; let indexOfelement=index" [value]="indexOfelement">
+                        {{x}}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+        </p>
+        <button mat-stroked-button [disabled]="selGoAntrag === ''" (click)="goAntrag()">
+            <mat-icon style="vertical-align: middle;">accessibility_new</mat-icon> GO Antrag stellen
+        </button>
+        <div class="alert" *ngIf="isAntragSend">
+            <span>Dein GO-Antrag wurde gesendet!</span>
+        </div>
     </div>
 
     <h3 *ngIf="apiUrl">Stimmungskarte heben</h3>

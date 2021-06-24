@@ -73,6 +73,15 @@ def get_config_variables():
     )
 
     yield ConfigVariable(
+        name="digiv_go_enabled",
+        default_value=True,
+        label="DigiV GO Anträge aktivieren",
+        input_type="boolean",
+        weight=125,
+        subgroup="Event",
+    )
+
+    yield ConfigVariable(
         name="general_event_legal_notice",
         default_value='<a href="http://www.openslides.org">OpenSlides</a> is a '
         "free web based presentation and assembly system for "
