@@ -1,5 +1,5 @@
 # Hotfix see https://github.com/crossbario/autobahn-python/issues/1205
-autobahn==19.5.1
+autobahn==20.12.3
 
 # Use release 3.2.9 with this issue fixed: https://github.com/django/asgiref/issues/170
 # introduced with 3.2.8
