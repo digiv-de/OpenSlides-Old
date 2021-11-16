@@ -51,6 +51,7 @@
                     <div class="vote-candidate-name">
                         <span *ngIf="option.user">
                             <span>{{ option.user.short_name }}</span>
+                            <span style="margin-left: 1rem;">{{ option.user.comment }}</span>
                             <div class="user-subtitle" *ngIf="option.user.getLevelAndNumber()">
                                 {{ option.user.getLevelAndNumber() }}
                             </div>

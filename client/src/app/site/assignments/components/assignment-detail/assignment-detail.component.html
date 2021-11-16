@@ -155,6 +155,7 @@
                     >
                         <!-- implicit item references into the component using ng-template slot -->
                         <ng-template let-item>
+                            <span>{{item.user.comment}} </span>
                             <span *ngIf="hasPerms('manage')">
                                 <button
                                     mat-icon-button
